@@ -23,10 +23,10 @@ Our target audience would be individuals who do their grocery shopping. This too
 https://www.kaggle.com/openfoodfacts/world-food-facts
 
 #### References:
-Baldridge, A.S.; Huffman, M.D.; Taylor, F.; Xavier, D.; Bright, B.; Van Horn, L.V.; Neal, B.; Dunford, E. The Healthfulness of the US Packaged Food and Beverage Supply: A Cross-Sectional Study. Nutrients 2019, 11, 1704.
-https://www.cdc.gov/bloodpressure/facts.htm
-https://www.cdc.gov/cholesterol/facts.htm
-https://www.cdc.gov/diabetes/library/features/diabetes-stat-report.html
+- Baldridge, A.S.; Huffman, M.D.; Taylor, F.; Xavier, D.; Bright, B.; Van Horn, L.V.; Neal, B.; Dunford, E. The Healthfulness of the US Packaged Food and Beverage Supply: A Cross-Sectional Study. Nutrients 2019, 11, 1704.
+- https://www.cdc.gov/bloodpressure/facts.htm
+- https://www.cdc.gov/cholesterol/facts.htm
+- https://www.cdc.gov/diabetes/library/features/diabetes-stat-report.html
 
 
 ## Idea 2 - Search System for Covid Data
@@ -52,9 +52,9 @@ This application will help the users be aware of the latest news and trending in
 No dataset required
 
 #### Reference
-https://www.nytimes.com/2020/03/28/us/coronavirus-data-privacy.html
-https://solr.apache.org/ 
-https://github.com/lucidworks/banana
+- https://www.nytimes.com/2020/03/28/us/coronavirus-data-privacy.html
+- https://solr.apache.org/
+- https://github.com/lucidworks/banana
 
 
 ## Idea 3 - Content Impact Analyser
