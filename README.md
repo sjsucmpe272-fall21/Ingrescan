@@ -23,10 +23,10 @@ Our target audience would be individuals who do their grocery shopping. This too
 https://www.kaggle.com/openfoodfacts/world-food-facts
 
 #### References:
-[1] Baldridge, A.S.; Huffman, M.D.; Taylor, F.; Xavier, D.; Bright, B.; Van Horn, L.V.; Neal, B.; Dunford, E. The Healthfulness of the US Packaged Food and Beverage Supply: A Cross-Sectional Study. Nutrients 2019, 11, 1704.
-[2] https://www.cdc.gov/bloodpressure/facts.htm
-[3] https://www.cdc.gov/cholesterol/facts.htm
-[4] https://www.cdc.gov/diabetes/library/features/diabetes-stat-report.html
+Baldridge, A.S.; Huffman, M.D.; Taylor, F.; Xavier, D.; Bright, B.; Van Horn, L.V.; Neal, B.; Dunford, E. The Healthfulness of the US Packaged Food and Beverage Supply: A Cross-Sectional Study. Nutrients 2019, 11, 1704.
+https://www.cdc.gov/bloodpressure/facts.htm
+https://www.cdc.gov/cholesterol/facts.htm
+https://www.cdc.gov/diabetes/library/features/diabetes-stat-report.html
 
 
 ## Idea 2 - Search System for Covid Data
@@ -85,12 +85,12 @@ Artificial intelligence is a fast-growing field in today’s world. Amongst the 
 ### Approach
 Since the dataset is already annotated, we plan to build a ML model with the help of the dataset (shown below).
 This ML pipeline would look something as follows:
-1.       We would explore the data and find if there are any anomalies (for example: crops looking like weed or weed looking like a crop)
-2.       If there are any anomalies, we would then try to deal with them either by removing them or collecting more data to ensure that they are anomalies
-3.       Once this is done, we will then augment the data (by changing the angles of the images). This will help us build a more robust ML model.
-4.       Then we will try YOLO/RCNN model with transfer learning to build a model on the training data.
-5.       Once the model is built, we will predict on test data and check the F-1 score
-6.       We are checking F-1 Score because we want our model to have high precision and high recall
+- We would explore the data and find if there are any anomalies (for example: crops looking like weed or weed looking like a crop)
+- If there are any anomalies, we would then try to deal with them either by removing them or collecting more data to ensure that they are anomalies
+- Once this is done, we will then augment the data (by changing the angles of the images). This will help us build a more robust ML model.
+- Then we will try YOLO/RCNN model with transfer learning to build a model on the training data.
+- Once the model is built, we will predict on test data and check the F-1 score
+- We are checking F-1 Score because we want our model to have high precision and high recall
 Once we have built a model, we plan to build a simple interface so that it acts like an abstraction so that the end user can easily check the results.
 
 
@@ -111,10 +111,10 @@ SecureWay would ensure a little more peace of mind to the commuters travelling a
 ### Approach
 We plan to build an ML model which would detect if the location the commuter is traveling is safe or not.
 The ML model pipeline would look as follows:
-1.       We plan to use Chicago crime data set to build a binary classifier model.
-2.       While training this model, we would give more weightage to “Sexual Assault” and “Murder”
-3.       The model trained would detect if the location is safe for the commuter or not based on the parameters (data) we pass to the model.
-4.       The metric we are using here is log loss as we want the probability of weather the location is safe or not.
+- We plan to use Chicago crime data set to build a binary classifier model.
+- While training this model, we would give more weightage to “Sexual Assault” and “Murder”
+- The model trained would detect if the location is safe for the commuter or not based on the parameters (data) we pass to the model.
+- The metric we are using here is log loss as we want the probability of weather the location is safe or not.
 
 ### Persona
 General Public/Commuters.
