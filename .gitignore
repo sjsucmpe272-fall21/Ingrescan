@@ -1,0 +1,3 @@
+*.idea
+/food_and_nutrition_recognition/tmp/data
+/food_and_nutrition_recognition/tmp/model
