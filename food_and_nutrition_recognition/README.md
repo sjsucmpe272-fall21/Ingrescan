@@ -13,21 +13,32 @@ Make sure *app.config* is set with all mandatory parameters with right values al
 
 #### Setup
 On the terminal, run the following commands sequentially:
-```
+```pycon
 git clone git@github.com:sjsucmpe272-fall21/Ingrescan.git
 cd Ingrescan/food_and_nutrition_recognition
 conda env create -f environment.yml
 conda activate ingrescan
 ```
 
+Configure aws access, run the following command and enter keys shared to you by s3admin:
+```pycon
+aws configure
+```
+```pycon
+AWS Access Key ID [********************]: <AWS_ACCESS_KEY_ID>
+AWS Secret Access Key [********************]: <AWS_SECRET_ACCESS_KEY>
+Default region name [None]: 
+Default output format [None]:
+```
+
 ## How to Use
 
 #### Help
-```bash
+```pycon
 python -m  test -h
 ```
 
-```bash
+```pycon
 usage: test.py [-h] -m {test,prod,stage} -c CONFIG_PATH
 
 optional arguments:
@@ -40,12 +51,12 @@ optional arguments:
 
 #### Running main code
 Format of command to run:
-```bash
+```pycon
 python -m test -m <MODE> -c <CONFIG_PATH>
 ```
 EXAMPLE COMMAND:
-```bash
-python -m main -m test -c config/app.config
+```pycon
+python -m test -m test -c config/app.config
 ```
 
 Miscellaneous Notes
