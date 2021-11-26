@@ -1,9 +1,15 @@
 from configparser import ConfigParser, ExtendedInterpolation
+from argparse import ArgumentParser
 from fastai.vision import *
 import pickle
 import pandas as pd
 import boto3
 
+def parser():
+    arg = ArgumentParser()
+    arg.add_argument("-m", "--mode", required=True, help="Mode", choices={"stage", "prod", "test"})
+    arg.add_argument("-c", "--config_path", required=True, help="Path of config file")
+    return arg
 
 def get_config(mode, config_path):
     cfg = ConfigParser(interpolation=ExtendedInterpolation())
@@ -21,6 +27,11 @@ def load_data(nutrition_data_path):
     nutrition_data = pd.read_csv(nutrition_data_path, header=0)
     return nutrition_data
 
+def initialize():
+    ap = parser()
+    args_dict = vars(ap.parse_args())
+    cfg = get_config(args_dict['mode'], args_dict['config_path'])
+    return init(cfg)
 
 def init(cfg):
     s3_client = boto3.client('s3')
