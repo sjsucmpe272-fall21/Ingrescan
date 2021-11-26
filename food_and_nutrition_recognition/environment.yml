@@ -9,5 +9,5 @@ dependencies:
   - pandas==1.1.5
   - fastai==1.0.61
   - torchvision==0.11.1
-  - sklearn==1.0.1
+  - scikit-learn==1.0.1
 
