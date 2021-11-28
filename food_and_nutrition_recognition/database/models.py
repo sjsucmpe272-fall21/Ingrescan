@@ -1,15 +1,15 @@
-from db import db
+from database.db import db_obj
 
-class User(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    public_id = db.Column(db.String(50), unique=True)
-    name = db.Column(db.String(50))
-    password = db.Column(db.String(80))
-    admin = db.Column(db.Boolean)
 
-class Img(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    img = db.Column(db.Text, unique=True, nullable=False)
-    name = db.Column(db.Text, nullable=False)
-    mimetype = db.Column(db.Text, nullable=False)
-    #user_id = db.Column()
+class User(db_obj.Model):
+    id = db_obj.Column(db_obj.Integer, primary_key=True)
+    public_id = db_obj.Column(db_obj.String(50), unique=True)
+    name = db_obj.Column(db_obj.String(50))
+    password = db_obj.Column(db_obj.String(80))
+
+
+class Img(db_obj.Model):
+    id = db_obj.Column(db_obj.Integer, primary_key=True)
+    img = db_obj.Column(db_obj.Text, unique=True, nullable=False)
+    name = db_obj.Column(db_obj.Text, nullable=False)
+    mimetype = db_obj.Column(db_obj.Text, nullable=False)
