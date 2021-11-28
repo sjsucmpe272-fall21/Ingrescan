@@ -4,8 +4,8 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 import uuid
 
-from db.db import db_init, db
-from db.models import *
+from database.db import db_init, db
+from database.models import *
 
 from scripts.utils import initialize, food_predict, get_nutrition_info, recommend_food
 
