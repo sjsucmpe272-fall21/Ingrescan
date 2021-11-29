@@ -4,6 +4,7 @@ from fastai.vision import *
 import pickle
 import pandas as pd
 import boto3
+import os
 
 
 def parser():

@@ -1,26 +1,24 @@
 from fastai.vision.image import open_image
-from flask import Flask ,request, jsonify, make_response
+from flask import Flask, request, jsonify, make_response
 from fastai.vision import *
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 import uuid
-from database.db import db_init, db_obj
 from database.models import *
 from scripts.utils import api_config_init, food_predict, get_nutrition_info, recommend_food
+import os
+from flask_sqlalchemy import SQLAlchemy
 import warnings
 warnings.filterwarnings('ignore')
-import os
+
 
 app = Flask(__name__)
-
 userName = os.getenv('mysql_user')
 password = os.getenv('mysql_pass')
-host = os.getenv('myhsql_host')
+host = os.getenv('mysql_host')
+app.config['SQLALCHEMY_DATABASE_URI'] = f'mysql+pymysql://{userName}:{password}@{host}/IngreScan'
+db_obj = SQLAlchemy(app)
 
-app.config['SQLALCHEMY_DATABASE_URI'] = f'mysql://{userName}:{password}@{host}/IngreScan'
-
-# sqlite:///ingredientsscanner.db'
-db_init(app)
 [food_rec_model_global, knn_nutrition_model_global, nutrition_data_df_global] = api_config_init()
 
 
