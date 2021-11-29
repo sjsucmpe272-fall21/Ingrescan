@@ -2,8 +2,6 @@
 /frontend/.packages
 /frontend/build/
 /frontend/pubspec.lock
-/frontend/lib/Screens/Home/
-
 *.idea
 /food_and_nutrition_recognition/tmp/data/*
 /food_and_nutrition_recognition/tmp/model/*
