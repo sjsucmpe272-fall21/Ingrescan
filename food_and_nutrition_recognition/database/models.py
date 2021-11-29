@@ -1,10 +1,10 @@
 from api import db_obj
 
 
-class User(db_obj.Model):
+class user_data(db_obj.Model):
     # id = db_obj.Column(db_obj.Integer, primary_key=True)
     # public_id = db_obj.Column(db_obj.String(50), unique=True)
-    # name = db_obj.Column(db_obj.String(50))
+    # name = db_obj.Column(db_obj.Strqing(50))
     # password = db_obj.Column(db_obj.String(80))
     # u_id = db_obj.Column(db_obj.Integer, primary_key=True)
     public_u_id = db_obj.Column(db_obj.String(50), primary_key=True)
@@ -15,7 +15,7 @@ class User(db_obj.Model):
     u_pwd = db_obj.Column(db_obj.String(50))    
 
 
-class User_Food_Data(db_obj.Model):
+class user_food_data(db_obj.Model):
     # id = db_obj.Column(db_obj.Integer, primary_key=True)
     # img = db_obj.Column(db_obj.Text, unique=True, nullable=False)
     # name = db_obj.Column(db_obj.Text, nullable=False)
