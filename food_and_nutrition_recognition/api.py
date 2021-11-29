@@ -65,7 +65,7 @@ def login():
     if not user:
         return make_response('Could not verify', 401, {'WWW-Authenticate': 'Login required!'})
     if check_password_hash(user.password, auth.password):
-        return jsonify({'message': 'The user has been logged in!', 'id' : user.public_id})
+        return jsonify({'message': 'The user has been logged in!', 'id': user.public_id})
 
     return make_response('Could not verify', 401, {'WWW-Authenticate': 'Login required!'})
 
@@ -89,15 +89,12 @@ def upload():
     food_description = get_nutrition_info(nutrition_data_df_global, predicted_food_item)
 
     if len(list(food_description.keys())) > 0:
-        recommended_food_items = recommend_food(nutrition_data_df_global, knn_nutrition_model_global, food_description)
+        food_description['recommended_food_items'] = recommend_food(nutrition_data_df_global, knn_nutrition_model_global, food_description)
 
     # build response
-    response = {
-        "food_item": food_description['food_item'],
-        "energy_100g": food_description['energy_100g'],
-        "recommended_food_items": recommended_food_items
-    }
-    userFoodData = user_food_data(public_u_id = public_id, image=image.read(), foodname=food_description['food_item'], mimetype=mimetype)
+    response = food_description
+
+    userFoodData = user_food_data(public_u_id=public_id, image=image.read(), foodname=food_description['food_item'], mimetype=mimetype)
     db_obj.session.add(userFoodData)
     db_obj.session.commit()
 
