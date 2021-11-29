@@ -3,3 +3,8 @@
 /frontend/build/
 /frontend/pubspec.lock
 /frontend/lib/Screens/Results/
+*.idea
+/food_and_nutrition_recognition/tmp/data/*
+/food_and_nutrition_recognition/tmp/model/*
+*.pyc
+*.db
