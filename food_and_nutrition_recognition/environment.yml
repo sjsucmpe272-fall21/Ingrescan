@@ -1,4 +1,4 @@
-name: ingrescan
+name: ingre-scan
 channels:
   - anaconda
   - fastai
@@ -13,4 +13,4 @@ dependencies:
   - flask==2.0.2
   - flask-sqlalchemy==2.5.1
   - werkzeug==2.0.2
-
+  - pymysql
