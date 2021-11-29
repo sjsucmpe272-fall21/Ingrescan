@@ -1,3 +1,4 @@
+from fastai.vision.image import open_image
 from flask import Flask ,request, jsonify, make_response
 from fastai.vision import *
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -8,11 +9,17 @@ from database.models import *
 from scripts.utils import api_config_init, food_predict, get_nutrition_info, recommend_food
 import warnings
 warnings.filterwarnings('ignore')
-
+import os
 
 app = Flask(__name__)
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///ingredientsscanner.db'
+userName = os.getenv('mysql_user')
+password = os.getenv('mysql_pass')
+host = os.getenv('myhsql_host')
+
+app.config['SQLALCHEMY_DATABASE_URI'] = f'mysql://{userName}:{password}@{host}/IngreScan'
+
+# sqlite:///ingredientsscanner.db'
 db_init(app)
 [food_rec_model_global, knn_nutrition_model_global, nutrition_data_df_global] = api_config_init()
 
@@ -60,13 +67,15 @@ def login():
     if not user:
         return make_response('Could not verify', 401, {'WWW-Authenticate': 'Login required!'})
     if check_password_hash(user.password, auth.password):
-        return jsonify({'message': 'The user has been logged in!'})
+        return jsonify({'message': 'The user has been logged in!', 'id' : user.public_id})
 
     return make_response('Could not verify', 401, {'WWW-Authenticate': 'Login required!'})
 
 
 @app.route('/imageUpload', methods=['POST'])
 def upload():
+    data = request.get_json()
+    public_id = data['id']
     image = request.files['image']
     if not image:
         return 'No image uploaded!', 400
@@ -76,7 +85,6 @@ def upload():
     if not filename or not mimetype:
         return 'Bad upload!', 400
 
-    # Read the image via file.stream
     img = open_image(filename)
 
     predicted_food_item = food_predict(food_rec_model_global, img)
@@ -91,7 +99,7 @@ def upload():
         "energy_100g": food_description['energy_100g'],
         "recommended_food_items": recommended_food_items
     }
-    img = Img(img=image.read(), name=filename, mimetype=mimetype)
+    img = Img(img=image.read(), name=filename, mimetype=mimetype, userId = public_id)
     db_obj.session.add(img)
     db_obj.session.commit()
 

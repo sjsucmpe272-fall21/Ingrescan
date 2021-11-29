@@ -13,3 +13,4 @@ class Img(db_obj.Model):
     img = db_obj.Column(db_obj.Text, unique=True, nullable=False)
     name = db_obj.Column(db_obj.Text, nullable=False)
     mimetype = db_obj.Column(db_obj.Text, nullable=False)
+    userId = db_obj.Column(db_obj.String(50))
