@@ -1,4 +1,4 @@
-from api import db_obj
+from database.db import db_obj
 
 
 class user_data(db_obj.Model):
