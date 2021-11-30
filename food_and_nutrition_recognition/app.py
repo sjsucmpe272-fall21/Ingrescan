@@ -22,53 +22,50 @@ cfg, food_rec_model_global, knn_nutrition_model_global, nutrition_data_df_global
 
 @app.route('/user', methods=['GET'])
 def get_all_users():
-    output = []
     try:
         global user_data
         users = user_data.query.all()
+        output = []
         for user in users:
-            user_data = {'public_u_id': user.public_u_id, 'fname': user.u_fname, 'lname': user.u_lname, 'password': user.u_pwd}
-            output.append(user_data)
+            u_temp = {'public_u_id': user.public_u_id, 'fname': user.u_fname, 'lname': user.u_lname, 'email': user.u_email}
+            output.append(u_temp)
+        return jsonify({'users': output})
     except Exception as e:
         db_obj.session.rollback()
         return jsonify({'error': e})
-    finally:
-        return jsonify({'users': output})
 
 
 @app.route('/user/<public_u_id>', methods=['GET'])
 def get_user(public_u_id):
-    user_dict = {}
     try:
         global user_data
         user = user_data.query.filter_by(public_u_id=public_u_id).first()
+        user_dict = {}
         if not user:
             return jsonify({'message': 'No user found!'})
 
         user_dict = {'public_u_id': user.public_u_id, 'fname': user.u_fname, 'lname': user.u_lname, 'password': user.u_pwd}
+        return jsonify({'user': user_dict})
     except Exception as e:
         db_obj.session.rollback()
         return jsonify({'error': e})
-    finally:
-        return jsonify({'user': user_dict})
 
 
 @app.route('/signup', methods=['POST'])
 def register_user():
-    public_u_id = str(uuid.uuid4())
     try:
-        global user_data
         data = request.get_json()
         hashed_password = generate_password_hash(data['password'], method='sha256')
+        public_u_id = str(uuid.uuid4())
+        global user_data
         new_user = user_data(public_u_id=public_u_id, u_fname=data['fname'], u_lname=data['lname'], u_phone=data['phone'],
                              u_email=data['email'], u_pwd=hashed_password)
         db_obj.session.add(new_user)
         db_obj.session.commit()
+        return jsonify({'message': 'New user created!', 'id': public_u_id})
     except Exception as e:
         db_obj.session.rollback()
         return jsonify({'error': e})
-    finally:
-        return jsonify({'message': 'New user created!', 'id': public_u_id})
 
 
 @app.route('/login', methods=['POST'])
@@ -82,11 +79,10 @@ def login():
             return make_response('Could not verify', 401, {'WWW-Authenticate': 'Login required!'})
         if check_password_hash(user.password, auth.password):
             return jsonify({'message': 'The user has been logged in!', 'id': user.public_u_id})
+        return make_response('Could not verify', 401, {'WWW-Authenticate': 'Login required!'})
     except Exception as e:
         db_obj.session.rollback()
         return jsonify({'error': e})
-    finally:
-        return make_response('Could not verify', 401, {'WWW-Authenticate': 'Login required!'})
 
 
 @app.route('/imageUpload', methods=['POST'])
