@@ -33,7 +33,6 @@ def get_all_users():
         db_obj.session.rollback()
         return jsonify({'error': e})
     finally:
-        db_obj.session.close()
         return jsonify({'users': output})
 
 
@@ -51,7 +50,6 @@ def get_user(public_u_id):
         db_obj.session.rollback()
         return jsonify({'error': e})
     finally:
-        db_obj.session.close()
         return jsonify({'user': user_dict})
 
 
@@ -70,7 +68,6 @@ def register_user():
         db_obj.session.rollback()
         return jsonify({'error': e})
     finally:
-        db_obj.session.close()
         return jsonify({'message': 'New user created!', 'id': public_u_id})
 
 
@@ -89,7 +86,6 @@ def login():
         db_obj.session.rollback()
         return jsonify({'error': e})
     finally:
-        db_obj.session.close()
         return make_response('Could not verify', 401, {'WWW-Authenticate': 'Login required!'})
 
 
