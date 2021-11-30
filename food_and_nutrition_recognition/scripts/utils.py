@@ -5,6 +5,7 @@ import pickle
 import pandas as pd
 import boto3
 import os
+from flask_sqlalchemy import SQLAlchemy
 
 
 def parser():
@@ -12,6 +13,14 @@ def parser():
     arg.add_argument("-m", "--mode", required=True, help="Mode", choices={"stage", "prod", "test"})
     arg.add_argument("-c", "--config_path", required=True, help="Path of config file")
     return arg
+
+
+def db_connect(app):
+    userName = os.getenv('mysql_user')
+    password = os.getenv('mysql_pass')
+    host = os.getenv('mysql_host')
+    app.config['SQLALCHEMY_DATABASE_URI'] = f'mysql+pymysql://{userName}:{password}@{host}:3306/IngreScan'
+    return SQLAlchemy(app)
 
 
 def get_config(mode, config_path):
@@ -36,10 +45,10 @@ def api_config_init():
 
 
 def init(cfg):
-    s3_client = boto3.client('s3')
-    s3_client.download_file(cfg['bucket'], cfg['food_rec_model_key'], cfg['food_rec_model_path'])
-    s3_client.download_file(cfg['bucket'], cfg['knn_nutrition_model_key'], cfg['knn_nutrition_model_path'])
-    s3_client.download_file(cfg['bucket'], cfg['nutrition_data_key'], cfg['nutrition_data_path'])
+    # s3_client = boto3.client('s3')
+    # s3_client.download_file(cfg['bucket'], cfg['food_rec_model_key'], cfg['food_rec_model_path'])
+    # s3_client.download_file(cfg['bucket'], cfg['knn_nutrition_model_key'], cfg['knn_nutrition_model_path'])
+    # s3_client.download_file(cfg['bucket'], cfg['nutrition_data_key'], cfg['nutrition_data_path'])
 
     [food_rec_model, knn_nutrition_model] = load_models(cfg['model_path'], cfg['knn_nutrition_model_path'])
     nutrition_data_df = load_data(cfg['nutrition_data_path'])
