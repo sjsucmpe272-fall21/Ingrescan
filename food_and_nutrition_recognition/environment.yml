@@ -1,9 +1,10 @@
-name: ingre-scan
+name: ingrescan
 channels:
   - anaconda
   - fastai
   - pytorch
   - defaults
+  - conda-forge
 dependencies:
   - boto3
   - pandas==1.1.5
