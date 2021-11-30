@@ -1,4 +1,4 @@
-name: ingre-scan
+name: ingrescan
 channels:
   - anaconda
   - fastai
