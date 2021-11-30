@@ -74,7 +74,7 @@ def register_user():
         return jsonify({'message': 'New user created!', 'id': public_u_id})
 
 
-@app.route('/login')
+@app.route('/login', methods=['POST'])
 def login():
     try:
         auth = request.authorization
