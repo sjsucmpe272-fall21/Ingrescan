@@ -72,9 +72,9 @@ def register_user():
 def login():
     try:
         auth = request.authorization
-        if not auth or not auth.email or not auth.password:
+        if not auth or not auth.username or not auth.password:
             return make_response('Could not verify', 401, {'WWW-Authenticate': 'Login required!'})
-        user = user_data.query.filter_by(u_email=auth.email).first()
+        user = user_data.query.filter_by(u_email=auth.usernam).first()
         if not user:
             return make_response('Could not verify', 401, {'WWW-Authenticate': 'Login required!'})
         if check_password_hash(user.password, auth.password):
