@@ -93,7 +93,7 @@ def upload(uid):
         cfg['curr_ts_epoch'] = str(int(time.time()))
         image = request.files['image']
         if not image:
-            return jsonify({'No image uploaded!'}), 400
+            return jsonify({'message': 'No image uploaded. Please upload an image!'}), 400
 
         ALLOWED_EXTENSIONS = set(eval(cfg['allowed_extensions']))
         if image and allowed_file(image.filename, ALLOWED_EXTENSIONS):
@@ -111,11 +111,11 @@ def upload(uid):
             img = open_image(image)
             predicted_food_item = food_predict(food_rec_model_global, img)
             if len(predicted_food_item) == 0:
-                return jsonify({'Picture not clear. Please click clear picture of the food item.'})
+                return jsonify({'message': 'Picture not clear. Please click clear picture of the food item.'})
 
             food_description = get_nutrition_info(nutrition_data_df_global, predicted_food_item)
             if len(list(food_description.keys())) <= 1:
-                return jsonify({'Picture not clear. Please click clear picture of the food item.'})
+                return jsonify({'message': 'Picture not clear. Please click clear picture of the food item.'})
 
             recommended_food_items = recommend_food(nutrition_data_df_global, knn_nutrition_model_global,
                                                     food_description)
