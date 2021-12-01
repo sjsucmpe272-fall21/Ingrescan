@@ -91,9 +91,9 @@ def recommend_food(nutrition_data_df, knn_nutrition_model, user_history, n=3):
     return recommended_food
 
 
-def s3_upload_data(cfg):
+def s3_upload_data(cfg, image):
     try:
-        s3_client.upload_file(cfg['image_path'], cfg['bucket'], cfg['s3_image_key'])
+        s3_client.upload_file(image, cfg['bucket'], cfg['s3_image_key'])
     except Exception as e:
         return False
     return True
