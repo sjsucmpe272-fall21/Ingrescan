@@ -103,9 +103,7 @@ def upload(uid):
             cfg['s3_image_key'] = cfg['s3_image_key'].format(cfg['curr_user_id'], cfg['curr_ts_epoch'],
                                                              cfg['image_file_name'])
 
-            print("3")
             image.save(cfg['image_path'])
-            print("4")
             mimetype = image.mimetype
             if not cfg['image_file_name'] or not mimetype:
                 return 'Bad upload!', 400
