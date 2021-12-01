@@ -2,12 +2,13 @@ import os
 from fastai.vision.image import open_image
 from flask import Flask, request, jsonify, make_response
 from fastai.vision import *
-# import pandas as pd
+import time
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 import uuid
 from database.db import connect_to_db
-from scripts.utils import api_config_init, food_predict, get_nutrition_info, recommend_food, allowed_file
+from scripts.utils import api_config_init, food_predict, get_nutrition_info, recommend_food, allowed_file, \
+    s3_upload_data
 import warnings
 warnings.filterwarnings('ignore')
 
@@ -85,45 +86,61 @@ def login():
         return jsonify({'error': e})
 
 
-@app.route('/imageUpload', methods=['POST'])
-def upload():
-    public_u_id = request.form['id']
-    image = request.files['image']
-    if not image:
-        return 'No image uploaded!', 400
+@app.route('/<uid>/imageUpload', methods=['POST'])
+def upload(uid):
+    try:
+        cfg['curr_user_id'] = uid
+        cfg['curr_ts_epoch'] = str(int(time.time()))
+        image = request.files['image']
+        if not image:
+            return jsonify({'No image uploaded!'}), 400
 
-    ALLOWED_EXTENSIONS = set(eval(cfg['ALLOWED_EXTENSIONS']))
-    if image and allowed_file(image.filename, ALLOWED_EXTENSIONS):
-        filename = secure_filename(image.filename)
-        basedir = os.path.abspath(os.path.dirname(__file__))
-        image.save(os.path.join(basedir, cfg['UPLOAD_FOLDER'], filename))
-        mimetype = image.mimetype
-        if not filename or not mimetype:
-            return 'Bad upload!', 400
+        ALLOWED_EXTENSIONS = set(eval(cfg['allowed_extensions']))
+        if image and allowed_file(image.filename, ALLOWED_EXTENSIONS):
+            cfg['base_dir_path'] = os.path.abspath(os.path.dirname(__file__))
+            cfg['image_file_name'] = secure_filename(image.filename)
+            cfg['image_path'] = cfg['image_path'].format(cfg['base_dir_path'], cfg['image_file_name'])
+            cfg['s3_image_key'] = cfg['s3_image_key'].format(cfg['curr_user_id'], cfg['curr_ts_epoch'],
+                                                             cfg['image_file_name'])
 
-        img = open_image(os.path.join(basedir, cfg['UPLOAD_FOLDER'], filename))
+            image.save(cfg['image_path'])
+            mimetype = image.mimetype
+            if not cfg['image_file_name'] or not mimetype:
+                return 'Bad upload!', 400
 
-        predicted_food_item = food_predict(food_rec_model_global, img)
-        food_description = get_nutrition_info(nutrition_data_df_global, predicted_food_item)
+            img = open_image(cfg['image_path'])
+            predicted_food_item = food_predict(food_rec_model_global, img)
+            food_description = get_nutrition_info(nutrition_data_df_global, predicted_food_item)
 
-        if len(list(food_description.keys())) > 0:
-            recommended_food_items = recommend_food(nutrition_data_df_global, knn_nutrition_model_global, food_description)
+            if len(list(food_description.keys())) > 0:
+                recommended_food_items = recommend_food(nutrition_data_df_global, knn_nutrition_model_global,
+                                                        food_description)
 
-        response = {
-            # "food_item": food_description['food_item'],
-            "energy_100g": food_description['energy_100g'],
-            "carbohydrates_100g": food_description['carbohydrates_100g'],
-            "proteins_100g": food_description['proteins_100g'],
-            "fat_100g": food_description['fat_100g'],
-            "fiber_100g": food_description['fiber_100g'],
-            "cholesterol_100g": food_description['cholesterol_100g'],
-            "recommended_food_items": recommended_food_items
-        }
-        # userFoodData = user_food_data(public_u_id = public_u_id, image=image.read(), foodname=food_description['food_item'], mimetype=mimetype)
-        # db_obj.session.add(userFoodData)
-        # db_obj.session.commit()
+            response = {
+                "food": predicted_food_item,
+                "energy_100g": food_description['energy_100g'],
+                "carbohydrates_100g": food_description['carbohydrates_100g'],
+                "proteins_100g": food_description['proteins_100g'],
+                "fat_100g": food_description['fat_100g'],
+                "fiber_100g": food_description['fiber_100g'],
+                "cholesterol_100g": food_description['cholesterol_100g'],
+                "recommended_food_items": recommended_food_items
+            }
 
-    return response
+            if s3_upload_data(cfg):
+                userFoodData = user_food_data(public_u_id=cfg['curr_user_id'],
+                                              image=os.path.join(cfg['s3'], cfg['bucket'], cfg['s3_image_key']),
+                                              foodname=predicted_food_item, mimetype=mimetype,
+                                              timestamp=cfg['curr_ts_epoch'])
+                db_obj.session.add(userFoodData)
+                db_obj.session.commit()
+                os.remove(cfg['image_path'])
+
+            return response
+
+    except Exception as e:
+        db_obj.session.rollback()
+        return jsonify({'error': e})
 
 
 if __name__ == "__main__":

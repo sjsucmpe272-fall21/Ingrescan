@@ -14,5 +14,6 @@ class user_food_data(db_obj.Model):
     f_id = db_obj.Column(db_obj.Integer, primary_key=True)
     public_u_id = db_obj.Column(db_obj.String(50))
     image = db_obj.Column(db_obj.Text, unique=True, nullable=False)
-    foodname = db_obj.Column(db_obj.String(50), nullable=False)
-    mimetype = db_obj.Column(db_obj.String(50), nullable=False)
+    foodname = db_obj.Column(db_obj.String(100), nullable=False)
+    mimetype = db_obj.Column(db_obj.String(20), nullable=True)
+    timestamp = db_obj.Column(db_obj.String(20), nullable=False)

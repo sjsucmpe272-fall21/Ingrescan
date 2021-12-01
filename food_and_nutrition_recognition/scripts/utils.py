@@ -7,6 +7,8 @@ import boto3
 import os
 from flask_sqlalchemy import SQLAlchemy
 
+s3_client = boto3.client('s3')
+
 
 def parser():
     arg = ArgumentParser()
@@ -51,7 +53,6 @@ def api_config_init():
 
 
 def init(cfg):
-    s3_client = boto3.client('s3')
     s3_client.download_file(cfg['bucket'], cfg['food_rec_model_key'], cfg['food_rec_model_path'])
     s3_client.download_file(cfg['bucket'], cfg['knn_nutrition_model_key'], cfg['knn_nutrition_model_path'])
     s3_client.download_file(cfg['bucket'], cfg['nutrition_data_key'], cfg['nutrition_data_path'])
@@ -88,3 +89,11 @@ def recommend_food(nutrition_data_df, knn_nutrition_model, user_history, n=3):
     distances, indices = knn_nutrition_model.kneighbors([list(user_history.values())], n_neighbors=n)
     recommended_food = [nutrition_data_df.loc[i]['food_item'] for i in indices[0]]
     return recommended_food
+
+
+def s3_upload_data(cfg):
+    try:
+        s3_client.upload_file(cfg['image_path'], cfg['bucket'], cfg['s3_image_key'])
+    except Exception as e:
+        return False
+    return True
