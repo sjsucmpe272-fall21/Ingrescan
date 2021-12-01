@@ -98,5 +98,6 @@ def s3_upload_data(cfg):
     try:
         s3_client.upload_file(cfg['image_path'], cfg['bucket'], cfg['s3_image_key'])
     except Exception as e:
+        print(e)
         return False
     return True
