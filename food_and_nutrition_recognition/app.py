@@ -98,8 +98,8 @@ def upload(uid):
         ALLOWED_EXTENSIONS = set(eval(cfg['allowed_extensions']))
         if image and allowed_file(image.filename, ALLOWED_EXTENSIONS):
             # cfg['base_dir_path'] = os.path.abspath(os.path.dirname(__file__))
-            # cfg['image_file_name'] = secure_filename(image.filename)
-            cfg['image_path'] = cfg['image_path'].format(cfg['base_dir_path'], cfg['image_file_name'])
+            cfg['image_file_name'] = secure_filename(image.filename)
+            # cfg['image_path'] = cfg['image_path'].format(cfg['base_dir_path'], cfg['image_file_name'])
             # cfg['s3_image_key'] = cfg['s3_image_key'].format(cfg['curr_user_id'], cfg['curr_ts_epoch'],
             #                                                  cfg['image_file_name'])
 
@@ -137,7 +137,7 @@ def upload(uid):
                                               timestamp=cfg['curr_ts_epoch'])
                 db_obj.session.add(userFoodData)
                 db_obj.session.commit()
-                os.remove(cfg['image_path'])
+                # os.remove(cfg['image_path'])
 
             return response
 
