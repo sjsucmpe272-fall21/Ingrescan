@@ -111,17 +111,21 @@ def upload(uid):
             img = open_image(image)
             predicted_food_item = food_predict(food_rec_model_global, img)
             print(predicted_food_item)
+            import pdb
+            pdb.set_trace()
             if len(predicted_food_item) == 0:
                 return jsonify({'Picture not clear. Please click clear picture of the food item.'})
 
             food_description = get_nutrition_info(nutrition_data_df_global, predicted_food_item)
             print(food_description)
+            pdb.set_trace()
             if len(list(food_description.keys())) <= 1:
                 return jsonify({'Picture not clear. Please click clear picture of the food item.'})
 
             recommended_food_items = recommend_food(nutrition_data_df_global, knn_nutrition_model_global,
                                                     food_description)
             print(recommended_food_items)
+            pdb.set_trace()
 
             response = {
                 "food": predicted_food_item,
