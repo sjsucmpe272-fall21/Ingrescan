@@ -53,9 +53,12 @@ def api_config_init():
 
 
 def init(cfg):
-    s3_client.download_file(cfg['bucket'], cfg['food_rec_model_key'], cfg['food_rec_model_path'])
-    s3_client.download_file(cfg['bucket'], cfg['knn_nutrition_model_key'], cfg['knn_nutrition_model_path'])
-    s3_client.download_file(cfg['bucket'], cfg['nutrition_data_key'], cfg['nutrition_data_path'])
+    if not os.path.exists(cfg['food_rec_model_path']):
+        s3_client.download_file(cfg['bucket'], cfg['food_rec_model_key'], cfg['food_rec_model_path'])
+    if not os.path.exists(cfg['knn_nutrition_model_path']):
+        s3_client.download_file(cfg['bucket'], cfg['knn_nutrition_model_key'], cfg['knn_nutrition_model_path'])
+    if not os.path.exists(cfg['nutrition_data_path']):
+        s3_client.download_file(cfg['bucket'], cfg['nutrition_data_key'], cfg['nutrition_data_path'])
 
     [food_rec_model, knn_nutrition_model] = load_models(cfg['model_path'], cfg['knn_nutrition_model_path'])
     nutrition_data_df = load_data(cfg['nutrition_data_path'])

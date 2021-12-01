@@ -97,19 +97,20 @@ def upload(uid):
 
         ALLOWED_EXTENSIONS = set(eval(cfg['allowed_extensions']))
         if image and allowed_file(image.filename, ALLOWED_EXTENSIONS):
-            # cfg['base_dir_path'] = os.path.abspath(os.path.dirname(__file__))
+            cfg['base_dir_path'] = os.path.abspath(os.path.dirname(__file__))
             cfg['image_file_name'] = secure_filename(image.filename)
-            # cfg['image_path'] = cfg['image_path'].format(cfg['base_dir_path'], cfg['image_file_name'])
-            # cfg['s3_image_key'] = cfg['s3_image_key'].format(cfg['curr_user_id'], cfg['curr_ts_epoch'],
-            #                                                  cfg['image_file_name'])
+            cfg['image_path'] = cfg['image_path'].format(cfg['base_dir_path'], cfg['image_file_name'])
+            cfg['s3_image_key'] = cfg['s3_image_key'].format(cfg['curr_user_id'], cfg['curr_ts_epoch'],
+                                                             cfg['image_file_name'])
 
-            # image.save(cfg['image_path'])
+            image.save(cfg['image_path'])
             mimetype = image.mimetype
             if not cfg['image_file_name'] or not mimetype:
                 return 'Bad upload!', 400
 
             from PIL import Image as PImage
             import numpy as np
+            print(os.path.getsize(cfg['image_path']))
             img = Image(pil2tensor(PImage.open(image).convert('RGB'), np.float32).div_(255))
             # img = open_image(image)
             predicted_food_item = food_predict(food_rec_model_global, img)
