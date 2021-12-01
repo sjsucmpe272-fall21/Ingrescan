@@ -104,7 +104,7 @@ def upload(uid):
             print(cfg['image_path'])
             cfg['s3_image_key'] = cfg['s3_image_key'].format(cfg['curr_user_id'], cfg['curr_ts_epoch'],
                                                              cfg['image_file_name'])
-            print(cfg['image_key'])
+            print(cfg['s3_image_key'])
 
             image.save(cfg['image_path'])
             mimetype = image.mimetype
