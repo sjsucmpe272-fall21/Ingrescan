@@ -115,31 +115,32 @@ def upload(uid):
                 recommended_food_items = recommend_food(nutrition_data_df_global, knn_nutrition_model_global,
                                                         food_description)
 
-            response = {
-                "food": predicted_food_item,
-                "energy_100g": food_description['energy_100g'],
-                "carbohydrates_100g": food_description['carbohydrates_100g'],
-                "proteins_100g": food_description['proteins_100g'],
-                "fat_100g": food_description['fat_100g'],
-                "fiber_100g": food_description['fiber_100g'],
-                "cholesterol_100g": food_description['cholesterol_100g'],
-                "recommended_food_items": recommended_food_items
-            }
+                response = {
+                    "food": predicted_food_item,
+                    "energy_100g": food_description['energy_100g'],
+                    "carbohydrates_100g": food_description['carbohydrates_100g'],
+                    "proteins_100g": food_description['proteins_100g'],
+                    "fat_100g": food_description['fat_100g'],
+                    "fiber_100g": food_description['fiber_100g'],
+                    "cholesterol_100g": food_description['cholesterol_100g'],
+                    "recommended_food_items": recommended_food_items
+                }
 
-            if s3_upload_data(cfg):
-                userFoodData = user_food_data(public_u_id=cfg['curr_user_id'],
-                                              image=os.path.join(cfg['s3'], cfg['bucket'], cfg['s3_image_key']),
-                                              foodname=predicted_food_item, mimetype=mimetype,
-                                              timestamp=cfg['curr_ts_epoch'])
-                db_obj.session.add(userFoodData)
-                db_obj.session.commit()
-            os.remove(cfg['image_path'])
-
-            return response
-
+                if s3_upload_data(cfg):
+                    userFoodData = user_food_data(public_u_id=cfg['curr_user_id'],
+                                                  image=os.path.join(cfg['s3'], cfg['bucket'], cfg['s3_image_key']),
+                                                  foodname=predicted_food_item, mimetype=mimetype,
+                                                  timestamp=cfg['curr_ts_epoch'])
+                    db_obj.session.add(userFoodData)
+                    db_obj.session.commit()
+            else:
+                return jsonify({'Picture not clear. Please click clear picture of the food item.'})
     except Exception as e:
         db_obj.session.rollback()
         return jsonify({'error': e})
+    finally:
+        os.remove(cfg['image_path'])
+        return response
 
 
 if __name__ == "__main__":
