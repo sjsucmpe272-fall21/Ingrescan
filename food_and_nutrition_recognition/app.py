@@ -89,11 +89,13 @@ def login():
 @app.route('/<uid>/imageUpload', methods=['POST'])
 def upload(uid):
     try:
+        print("1")
         cfg['curr_user_id'] = uid
         cfg['curr_ts_epoch'] = str(int(time.time()))
         image = request.files['image']
         if not image:
             return jsonify({'No image uploaded!'}), 400
+        print("2")
 
         ALLOWED_EXTENSIONS = set(eval(cfg['allowed_extensions']))
         if image and allowed_file(image.filename, ALLOWED_EXTENSIONS):
@@ -103,19 +105,24 @@ def upload(uid):
             cfg['s3_image_key'] = cfg['s3_image_key'].format(cfg['curr_user_id'], cfg['curr_ts_epoch'],
                                                              cfg['image_file_name'])
 
+            print("3")
             image.save(cfg['image_path'])
+            print("4")
             mimetype = image.mimetype
             if not cfg['image_file_name'] or not mimetype:
                 return 'Bad upload!', 400
 
+            print("5")
             img = open_image(cfg['image_path'])
             predicted_food_item = food_predict(food_rec_model_global, img)
             food_description = get_nutrition_info(nutrition_data_df_global, predicted_food_item)
 
+            print("6")
             if len(list(food_description.keys())) > 0:
                 recommended_food_items = recommend_food(nutrition_data_df_global, knn_nutrition_model_global,
                                                         food_description)
 
+            print("7")
             response = {
                 "food": predicted_food_item,
                 "energy_100g": food_description['energy_100g'],
@@ -136,9 +143,11 @@ def upload(uid):
                 db_obj.session.commit()
                 os.remove(cfg['image_path'])
 
+            print("8")
             return response
 
     except Exception as e:
+        print("9")
         db_obj.session.rollback()
         return jsonify({'error': e})
 
