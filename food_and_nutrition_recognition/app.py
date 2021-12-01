@@ -110,31 +110,34 @@ def upload(uid):
 
             img = open_image(image)
             predicted_food_item = food_predict(food_rec_model_global, img)
-            food_description = get_nutrition_info(nutrition_data_df_global, predicted_food_item)
-            if len(list(food_description.keys())) > 0:
-                recommended_food_items = recommend_food(nutrition_data_df_global, knn_nutrition_model_global,
-                                                        food_description)
-
-                response = {
-                    "food": predicted_food_item,
-                    "energy_100g": food_description['energy_100g'],
-                    "carbohydrates_100g": food_description['carbohydrates_100g'],
-                    "proteins_100g": food_description['proteins_100g'],
-                    "fat_100g": food_description['fat_100g'],
-                    "fiber_100g": food_description['fiber_100g'],
-                    "cholesterol_100g": food_description['cholesterol_100g'],
-                    "recommended_food_items": recommended_food_items
-                }
-
-                if s3_upload_data(cfg):
-                    userFoodData = user_food_data(public_u_id=cfg['curr_user_id'],
-                                                  image=os.path.join(cfg['s3'], cfg['bucket'], cfg['s3_image_key']),
-                                                  foodname=predicted_food_item, mimetype=mimetype,
-                                                  timestamp=cfg['curr_ts_epoch'])
-                    db_obj.session.add(userFoodData)
-                    db_obj.session.commit()
-            else:
+            if len(predicted_food_item) == 0:
                 return jsonify({'Picture not clear. Please click clear picture of the food item.'})
+
+            food_description = get_nutrition_info(nutrition_data_df_global, predicted_food_item)
+            if len(list(food_description.keys())) <= 1:
+                return jsonify({'Picture not clear. Please click clear picture of the food item.'})
+
+            recommended_food_items = recommend_food(nutrition_data_df_global, knn_nutrition_model_global,
+                                                    food_description)
+
+            response = {
+                "food": predicted_food_item,
+                "energy_100g": food_description['energy_100g'],
+                "carbohydrates_100g": food_description['carbohydrates_100g'],
+                "proteins_100g": food_description['proteins_100g'],
+                "fat_100g": food_description['fat_100g'],
+                "fiber_100g": food_description['fiber_100g'],
+                "cholesterol_100g": food_description['cholesterol_100g'],
+                "recommended_food_items": recommended_food_items
+            }
+
+            if s3_upload_data(cfg):
+                userFoodData = user_food_data(public_u_id=cfg['curr_user_id'],
+                                              image=os.path.join(cfg['s3'], cfg['bucket'], cfg['s3_image_key']),
+                                              foodname=predicted_food_item, mimetype=mimetype,
+                                              timestamp=cfg['curr_ts_epoch'])
+                db_obj.session.add(userFoodData)
+                db_obj.session.commit()
     except Exception as e:
         db_obj.session.rollback()
         return jsonify({'error': e})
