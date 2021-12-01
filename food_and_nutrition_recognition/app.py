@@ -74,10 +74,10 @@ def login():
         auth = request.authorization
         if not auth or not auth.username or not auth.password:
             return make_response('Could not verify', 401, {'WWW-Authenticate': 'Login required!'})
-        user = user_data.query.filter_by(u_email=auth.usernam).first()
+        user = user_data.query.filter_by(u_email=auth.username).first()
         if not user:
             return make_response('Could not verify', 401, {'WWW-Authenticate': 'Login required!'})
-        if check_password_hash(user.password, auth.password):
+        if check_password_hash(user.u_pwd, auth.password):
             return jsonify({'message': 'The user has been logged in!', 'id': user.public_u_id})
         return make_response('Could not verify', 401, {'WWW-Authenticate': 'Login required!'})
     except Exception as e:
