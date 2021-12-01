@@ -108,11 +108,11 @@ def upload(uid):
             if not cfg['image_file_name'] or not mimetype:
                 return 'Bad upload!', 400
 
-            # from PIL import Image as PImage
-            # import numpy as np
+            from PIL import Image as PImage
+            import numpy as np
             # print(os.path.getsize(cfg['image_path'])/1000, " KB")
-            # img = Image(pil2tensor(PImage.open(image).convert('RGB'), np.float32).div_(255))
-            img = open_image(image)
+            img = Image(pil2tensor(PImage.open(image).convert('RGB'), np.float32).div_(255))
+            # img = open_image(image)
             predicted_food_item = food_predict(food_rec_model_global, img)
             food_description = get_nutrition_info(nutrition_data_df_global, predicted_food_item)
             if len(list(food_description.keys())) > 0:
