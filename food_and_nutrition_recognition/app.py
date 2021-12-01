@@ -108,7 +108,9 @@ def upload(uid):
             if not cfg['image_file_name'] or not mimetype:
                 return 'Bad upload!', 400
 
+            print("1")
             img = open_image(image)
+            print("2")
             predicted_food_item = food_predict(food_rec_model_global, img)
             food_description = get_nutrition_info(nutrition_data_df_global, predicted_food_item)
 
