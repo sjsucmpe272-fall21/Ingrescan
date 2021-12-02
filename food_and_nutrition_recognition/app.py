@@ -98,20 +98,13 @@ def upload(uid):
         ALLOWED_EXTENSIONS = set(eval(cfg['allowed_extensions']))
         if image and allowed_file(image.filename, ALLOWED_EXTENSIONS):
             cfg['base_dir_path'] = os.path.abspath(os.path.dirname(__file__))
-            cfg['image_file_name'] = secure_filename(image.filename)
-            print(cfg['image_file_name'])
-            import pdb
-            pdb.set_trace()
-            cfg['image_path'] = cfg['image_path'].format(cfg['base_dir_path'], cfg['image_file_name'])
-            print(cfg['image_path'])
-            cfg['s3_image_key'] = cfg['s3_image_key'].format(cfg['curr_user_id'], cfg['curr_ts_epoch'],
-                                                             cfg['image_file_name'])
-            pdb.set_trace()
-            print(cfg['s3_image_key'])
+            image_file_name = secure_filename(image.filename)
+            image_path = cfg['image_path'].format(cfg['base_dir_path'], cfg['image_file_name'])
+            s3_image_key = cfg['s3_image_key'].format(cfg['curr_user_id'], cfg['curr_ts_epoch'], cfg['image_file_name'])
 
-            image.save(cfg['image_path'])
+            image.save(image_path)
             mimetype = image.mimetype
-            if not cfg['image_file_name'] or not mimetype:
+            if not image_file_name or not mimetype:
                 return 'Bad upload!', 400
 
             img = open_image(image)
@@ -137,14 +130,14 @@ def upload(uid):
                 "recommended_food_items": recommended_food_items
             }
 
-            if s3_upload_data(cfg):
+            if s3_upload_data(image_path, cfg['bucket'], s3_image_key):
                 userFoodData = user_food_data(public_u_id=cfg['curr_user_id'],
-                                              image=os.path.join(cfg['s3'], cfg['bucket'], cfg['s3_image_key']),
+                                              image=os.path.join(cfg['s3'], cfg['bucket'], s3_image_key),
                                               foodname=predicted_food_item, mimetype=mimetype,
                                               timestamp=cfg['curr_ts_epoch'])
                 db_obj.session.add(userFoodData)
                 db_obj.session.commit()
-            os.remove(cfg['image_path'])
+            os.remove(image_path)
             return response
     except Exception as e:
         db_obj.session.rollback()
