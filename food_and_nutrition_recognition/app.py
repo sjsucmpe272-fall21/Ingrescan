@@ -14,10 +14,11 @@ warnings.filterwarnings('ignore')
 
 app = Flask(__name__)
 db_obj = connect_to_db(app)
-from database.models import user_data, user_food_data
+from database.models import user_data, user_food_data, user_nutrition_history
 
 user_data = user_data
 user_food_data = user_food_data
+user_nutrition_history = user_nutrition_history
 cfg, food_rec_model_global, knn_nutrition_model_global, nutrition_data_df_global = api_config_init()
 
 
@@ -116,13 +117,48 @@ def upload(uid):
             if len(list(food_description.keys())) <= 1:
                 return jsonify({'message': 'Picture not clear. Please click clear picture of the food item.'})
 
-            recommended_food_items = recommend_food(nutrition_data_df_global, knn_nutrition_model_global,
-                                                    food_description)
+            userFoodData = user_food_data(public_u_id=cfg['curr_user_id'],
+                                          image=os.path.join(cfg['s3'], cfg['bucket'], s3_image_key),
+                                          foodname=predicted_food_item, mimetype=mimetype,
+                                          timestamp=cfg['curr_ts_epoch'])
+            db_obj.session.add(userFoodData)
+            db_obj.session.commit()
+
+            userNutritionData = user_nutrition_history(f_id=userFoodData.f_id,
+                                                       public_u_id=cfg['curr_user_id'],
+                                                       energy_100g=food_description['energy_100g'],
+                                                       carbohydrates_100g=food_description['carbohydrates_100g'],
+                                                       sugars_100g=food_description['sugars_100g'],
+                                                       proteins_100g=food_description['proteins_100g'],
+                                                       fat_100g=food_description['fat_100g'],
+                                                       fiber_100g=food_description['fiber_100g'],
+                                                       cholesterol_100g=food_description['cholesterol_100g'],
+                                                       timestamp=cfg['curr_ts_epoch'])
+            db_obj.session.add(userNutritionData)
+            db_obj.session.commit()
+
+            with db_obj.get_engine().connect() as conn:
+                res = conn.execute("""SELECT SUM(`energy_100g`) AS energy,
+                SUM(`carbohydrates_100g`) as carbohydrates,
+                SUM(`proteins_100g`) as proteins,
+                SUM(`fat_100g`) as fat,
+                SUM(`fiber_100g`) as fiber,
+                SUM(`cholesterol_100g`) as cholesterol
+                FROM `IngreScan`.`user_nutrition_history`
+                WHERE UNIX_TIMESTAMP(FROM_UNIXTIME(`timestamp`)) > UNIX_TIMESTAMP(CURRENT_DATE()) 
+                AND UNIX_TIMESTAMP(FROM_UNIXTIME(`timestamp`)) < UNIX_TIMESTAMP(CURRENT_DATE() + INTERVAL 1 DAY);""")
+
+            user_history = []
+            for row in res.first():
+                user_history.append(row)
+
+            recommended_food_items = recommend_food(nutrition_data_df_global, knn_nutrition_model_global, user_history)
 
             response = {
                 "food": predicted_food_item,
                 "energy_100g": food_description['energy_100g'],
                 "carbohydrates_100g": food_description['carbohydrates_100g'],
+                "sugars_100g": food_description['sugars_100g'],
                 "proteins_100g": food_description['proteins_100g'],
                 "fat_100g": food_description['fat_100g'],
                 "fiber_100g": food_description['fiber_100g'],
@@ -130,13 +166,7 @@ def upload(uid):
                 "recommended_food_items": recommended_food_items
             }
 
-            if s3_upload_data(cfg['bucket'], s3_image_key, image_path):
-                userFoodData = user_food_data(public_u_id=cfg['curr_user_id'],
-                                              image=os.path.join(cfg['s3'], cfg['bucket'], s3_image_key),
-                                              foodname=predicted_food_item, mimetype=mimetype,
-                                              timestamp=cfg['curr_ts_epoch'])
-                db_obj.session.add(userFoodData)
-                db_obj.session.commit()
+            s3_upload_data(cfg['bucket'], s3_image_key, image_path)
             os.remove(image_path)
             return response
     except Exception as e:
