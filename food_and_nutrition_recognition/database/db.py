@@ -1,12 +1,9 @@
-from flask_sqlalchemy import SQLAlchemy
+from scripts.utils import db_connect
 
-db_obj = SQLAlchemy()
+db_obj = None
 
 
-# Function that initializes the db and creates the tables
-def db_init(app):
-    db_obj.init_app(app)
-
-    # Creates the tables if the db doesnt already exist
-    with app.app_context():
-        db_obj.create_all()
+def connect_to_db(app):
+    global db_obj
+    db_obj = db_connect(app)
+    return db_obj

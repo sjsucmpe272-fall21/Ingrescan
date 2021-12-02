@@ -4,6 +4,10 @@ from fastai.vision import *
 import pickle
 import pandas as pd
 import boto3
+import os
+from flask_sqlalchemy import SQLAlchemy
+
+s3_client = boto3.client('s3')
 
 
 def parser():
@@ -11,6 +15,14 @@ def parser():
     arg.add_argument("-m", "--mode", required=True, help="Mode", choices={"stage", "prod", "test"})
     arg.add_argument("-c", "--config_path", required=True, help="Path of config file")
     return arg
+
+
+def db_connect(app):
+    userName = os.getenv('mysql_user')
+    password = os.getenv('mysql_pass')
+    host = os.getenv('mysql_host')
+    app.config['SQLALCHEMY_DATABASE_URI'] = f'mysql+pymysql://{userName}:{password}@{host}:3306/IngreScan'
+    return SQLAlchemy(app)
 
 
 def get_config(mode, config_path):
@@ -30,20 +42,28 @@ def load_data(nutrition_data_path):
     return nutrition_data
 
 
+def allowed_file(filename, ALLOWED_EXTENSIONS):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+
 def api_config_init():
-    return init(get_config('stage', 'config/app.config'))
+    cfg = get_config('stage', 'config/app.config')
+    return init(cfg)
 
 
 def init(cfg):
-    s3_client = boto3.client('s3')
-    s3_client.download_file(cfg['bucket'], cfg['food_rec_model_key'], cfg['food_rec_model_path'])
-    s3_client.download_file(cfg['bucket'], cfg['knn_nutrition_model_key'], cfg['knn_nutrition_model_path'])
-    s3_client.download_file(cfg['bucket'], cfg['nutrition_data_key'], cfg['nutrition_data_path'])
+    if not os.path.exists(cfg['food_rec_model_path']):
+        s3_client.download_file(cfg['bucket'], cfg['food_rec_model_key'], cfg['food_rec_model_path'])
+    if not os.path.exists(cfg['knn_nutrition_model_path']):
+        s3_client.download_file(cfg['bucket'], cfg['knn_nutrition_model_key'], cfg['knn_nutrition_model_path'])
+    if not os.path.exists(cfg['nutrition_data_path']):
+        s3_client.download_file(cfg['bucket'], cfg['nutrition_data_key'], cfg['nutrition_data_path'])
 
     [food_rec_model, knn_nutrition_model] = load_models(cfg['model_path'], cfg['knn_nutrition_model_path'])
     nutrition_data_df = load_data(cfg['nutrition_data_path'])
 
-    return food_rec_model, knn_nutrition_model, nutrition_data_df
+    return cfg, food_rec_model, knn_nutrition_model, nutrition_data_df
 
 
 def food_predict(food_rec_model, image):
@@ -72,3 +92,12 @@ def recommend_food(nutrition_data_df, knn_nutrition_model, user_history, n=3):
     distances, indices = knn_nutrition_model.kneighbors([list(user_history.values())], n_neighbors=n)
     recommended_food = [nutrition_data_df.loc[i]['food_item'] for i in indices[0]]
     return recommended_food
+
+
+def s3_upload_data(bucket, s3_key, local_path):
+    try:
+        s3_client.upload_file(local_path, bucket, s3_key)
+    except Exception as e:
+        print(e)
+        return False
+    return True
