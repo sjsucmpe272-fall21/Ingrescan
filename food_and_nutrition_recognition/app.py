@@ -130,7 +130,7 @@ def upload(uid):
                 "recommended_food_items": recommended_food_items
             }
 
-            if s3_upload_data(image_path, cfg['bucket'], s3_image_key):
+            if s3_upload_data(cfg['bucket'], s3_image_key, image_path):
                 userFoodData = user_food_data(public_u_id=cfg['curr_user_id'],
                                               image=os.path.join(cfg['s3'], cfg['bucket'], s3_image_key),
                                               foodname=predicted_food_item, mimetype=mimetype,
