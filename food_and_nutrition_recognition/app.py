@@ -100,10 +100,13 @@ def upload(uid):
             cfg['base_dir_path'] = os.path.abspath(os.path.dirname(__file__))
             cfg['image_file_name'] = secure_filename(image.filename)
             print(cfg['image_file_name'])
+            import pdb
+            pdb.set_trace()
             cfg['image_path'] = cfg['image_path'].format(cfg['base_dir_path'], cfg['image_file_name'])
             print(cfg['image_path'])
             cfg['s3_image_key'] = cfg['s3_image_key'].format(cfg['curr_user_id'], cfg['curr_ts_epoch'],
                                                              cfg['image_file_name'])
+            pdb.set_trace()
             print(cfg['s3_image_key'])
 
             image.save(cfg['image_path'])
