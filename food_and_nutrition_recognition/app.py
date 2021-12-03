@@ -204,7 +204,7 @@ def get_user_hist(uid):
                 AND unh.`public_u_id` = '{uid}';""")
 
             user_history = []
-            keys = list(res._metadata.keys())
+            keys = list(res.keys())
             for row in res.first():
                 temp_dict = {}
                 i = 0
