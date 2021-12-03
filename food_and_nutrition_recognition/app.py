@@ -206,6 +206,7 @@ def get_user_hist(uid):
             user_history = []
             keys = list(res.keys())
             for row in res.first():
+                print(row)
                 temp_dict = {}
                 i = 0
                 for key in keys:
