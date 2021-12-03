@@ -189,6 +189,8 @@ def get_user_hist(uid):
 
         with db_obj.get_engine().connect() as conn:
             res = conn.execute(f"""SELECT `ufd`.`foodname` AS food,
+            `ufd`.`image` AS S3_Image_URI,
+            `ufd`.`mimetype` AS mimetype,
             `energy_100g` AS energy,
             `carbohydrates_100g` AS carbohydrates,
             `sugars_100g` AS sugars,
