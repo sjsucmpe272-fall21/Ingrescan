@@ -205,15 +205,14 @@ def get_user_hist(uid):
 
             user_history = []
             keys = list(res.keys())
-            for row in res.first():
-                print(row)
+            for row in res.fetchall():
                 temp_dict = {}
                 i = 0
                 for key in keys:
                     temp_dict[key] = row[i]
                     i += 1
                 user_history.append(temp_dict)
-        return make_response(user_history, 200)
+        return make_response({'user_history': user_history}, 200)
     except Exception as e:
         db_obj.session.rollback()
         return make_response('Internal Server Error', 500, {'Error': str(e)})
