@@ -180,5 +180,43 @@ def upload(uid):
         return make_response('Internal Server Error', 500, {'Error': str(e)})
 
 
+@app.route('/<uid>/userHistory', methods=['GET'])
+def get_user_hist(uid):
+    try:
+        if len(uid) == 0:
+            return make_response('Could not verify', 401, {'WWW-Authenticate': 'Login required!'})
+        cfg['curr_user_id'] = uid
+
+        with db_obj.get_engine().connect() as conn:
+            res = conn.execute(f"""SELECT `ufd`.`foodname` AS food,
+            `energy_100g` AS energy,
+            `carbohydrates_100g` AS carbohydrates,
+            `sugars_100g` AS sugars,
+            `proteins_100g` AS proteins,
+            `fat_100g` AS fat,
+            `fiber_100g` AS fiber,
+            `cholesterol_100g` AS cholesterol,
+            FROM_UNIXTIME(unh.`timestamp`) AS `timestamp`
+            FROM `IngreScan`.`user_nutrition_history` AS unh
+            NATURAL JOIN `IngreScan`.`user_food_data` as ufd
+            WHERE UNIX_TIMESTAMP(FROM_UNIXTIME(unh.`timestamp`)) > UNIX_TIMESTAMP(CURRENT_DATE())
+                AND UNIX_TIMESTAMP(FROM_UNIXTIME(unh.`timestamp`)) < UNIX_TIMESTAMP(CURRENT_DATE() + INTERVAL 1 DAY)
+                AND unh.`public_u_id` = '{uid}';""")
+
+            user_history = []
+            import pdb
+            pdb.set_trace()
+            keys = list(res._metadata.keys())
+            for row in res.first():
+                temp_dict = {}
+                for i in range(len(keys)):
+                    temp_dict[keys[i]] = row[i]
+                user_history.append(temp_dict)
+        return make_response(user_history, 200)
+    except Exception as e:
+        db_obj.session.rollback()
+        return make_response('Internal Server Error', 500, {'Error': str(e)})
+
+
 if __name__ == "__main__":
     app.run(host='0.0.0.0', debug=True)
