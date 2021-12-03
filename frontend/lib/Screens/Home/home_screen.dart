@@ -3,6 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_icons/flutter_icons.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:flutter_auth/Screens/Results/page/result_page.dart';
+import 'package:path/path.dart';
+import 'package:async/async.dart';
+import 'dart:io';
+import 'package:http/http.dart' as http;
+import 'package:http_parser/http_parser.dart';
+import 'dart:convert';
 
 class CameraPage extends StatefulWidget {
   @override
@@ -17,94 +24,16 @@ class _CameraPageState extends State<CameraPage> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
-    _setUpCamera();
     PermissionHandler()
         .checkPermissionStatus(PermissionGroup.camera)
         .then(_updateStatus);
-  }
-
-  void _setUpCamera() async {
-    try {
-      // initialize cameras.
-      _cameras = await availableCameras();
-      // initialize camera controllers.
-      // Current bug for high / medium with samsung devices.
-      _controller = CameraController(
-        _cameras[0],
-        ResolutionPreset.medium,
-      );
-
-      await _controller.initialize();
-    } on CameraException catch (_) {
-      // do something on error.
-    }
-    if (!mounted) return;
-    setState(() {
-      _isReady = true;
-    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         backgroundColor: Colors.white, floatingActionButton: getFooter());
-  }
-
-  Widget cameraPreview() {
-    return AspectRatio(
-        aspectRatio: _controller.value.aspectRatio,
-        child: CameraPreview(_controller));
-  }
-
-  Widget getBody() {
-    var size = MediaQuery.of(context).size;
-    if (_isReady == false ||
-        _controller == null ||
-        !_controller.value.isInitialized) {
-      return Container(
-        decoration: BoxDecoration(color: Colors.white),
-        width: size.width,
-        height: size.height,
-        child: Center(
-            child: SizedBox(
-                width: 25,
-                height: 25,
-                child: CircularProgressIndicator(
-                  strokeWidth: 3,
-                ))),
-      );
-    }
-
-    return Container(
-      width: size.width,
-      height: size.height,
-      child: ClipRRect(
-          borderRadius: BorderRadius.only(
-              bottomLeft: Radius.circular(10),
-              bottomRight: Radius.circular(10)),
-          child: cameraPreview()),
-    );
-  }
-
-  Widget getBodyBK() {
-    var size = MediaQuery.of(context).size;
-    return Container(
-      width: size.width,
-      height: size.height,
-      decoration: BoxDecoration(
-          borderRadius: BorderRadius.only(
-              bottomLeft: Radius.circular(20),
-              bottomRight: Radius.circular(20)),
-          color: Colors.white),
-      child: Image(
-        image: NetworkImage(
-          "https://images.unsplash.com/photo-1582152629442-4a864303fb96?ixid=MXwxMjA3fDB8MHxzZWFyY2h8MXx8c2VsZmllfGVufDB8fDB8&ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60",
-        ),
-        fit: BoxFit.cover,
-      ),
-    );
   }
 
   Widget getFooter() {
@@ -133,6 +62,21 @@ class _CameraPageState extends State<CameraPage> {
                 style: const TextStyle(
                     fontWeight: FontWeight.bold,
                     color: Color.fromRGBO(102, 102, 102, 1)),
+              ),
+              SizedBox(height: 100),
+              InkWell(
+                child: Image(image: AssetImage("assets/icons/gallery.png")),
+                onTap: () async {
+                  PermissionHandler().requestPermissions(
+                      [PermissionGroup.mediaLibrary]).then(__onStatusRequested);
+                },
+              ),
+              SizedBox(height: 20),
+              Text(
+                'Select from Gallery',
+                style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Color.fromRGBO(102, 102, 102, 1)),
               )
             ],
           )
@@ -141,46 +85,19 @@ class _CameraPageState extends State<CameraPage> {
     );
   }
 
-  void _displayOptionsDialog() async {
-    await _optionsDialogBox();
-  }
-
-  Future<void> _optionsDialogBox() {
-    return showDialog(
-        context: context,
-        barrierDismissible: true,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            content: new SingleChildScrollView(
-              child: new ListBody(
-                children: <Widget>[
-                  GestureDetector(
-                    child: new Text('Take Photo'),
-                    onTap: _askPermission,
-                  ),
-                  Padding(
-                    padding: EdgeInsets.all(8.0),
-                  ),
-                  GestureDetector(
-                    child: new Text('Select Image From Gallery'),
-                    onTap: imageSelectorGallery,
-                  ),
-                ],
-              ),
-            ),
-          );
-        });
-  }
-
-  void _askPermission() {
-    PermissionHandler()
-        .requestPermissions([PermissionGroup.camera]).then(_onStatusRequested);
-  }
-
   void _onStatusRequested(Map<PermissionGroup, PermissionStatus> value) {
     final status = value[PermissionGroup.camera];
     if (status == PermissionStatus.granted) {
       imageSelectorCamera();
+    } else {
+      _updateStatus(status);
+    }
+  }
+
+  void __onStatusRequested(Map<PermissionGroup, PermissionStatus> value) {
+    final status = value[PermissionGroup.mediaLibrary];
+    if (status == PermissionStatus.granted) {
+      imageSelectorGallery();
     } else {
       _updateStatus(status);
     }
@@ -198,12 +115,58 @@ class _CameraPageState extends State<CameraPage> {
     var imageFile = await ImagePicker.pickImage(
       source: ImageSource.camera,
     );
+    upload(imageFile);
+
+    Navigator.push(
+      this.context,
+      MaterialPageRoute(
+        builder: (context) {
+          return ResultPage();
+        },
+      ),
+    );
+  }
+
+  void upload(File imageFile) async {
+    var request = http.MultipartRequest(
+      'POST',
+      Uri.parse(
+          "http://ec2-3-14-43-170.us-east-2.compute.amazonaws.com:5000/f9ee5547-52a9-4421-8c0e-d0de3a6b0fd7/imageUpload"),
+    );
+    Map<String, String> headers = {"Content-type": "multipart/form-data"};
+    request.files.add(
+      http.MultipartFile(
+        'image',
+        imageFile.readAsBytes().asStream(),
+        imageFile.lengthSync(),
+        filename: imageFile.path,
+        contentType: MediaType('jpg', 'jpeg'),
+      ),
+    );
+    // print(imageFile)
+    request.headers.addAll(headers);
+    print("request: " + request.toString());
+    print("image: " + imageFile.path);
+    var response = await request.send();
+    var responded = await http.Response.fromStream(response);
+    final responseData = json.decode(responded.body);
+    print(responseData);
   }
 
   void imageSelectorGallery() async {
-    Navigator.pop(context);
-    var imageFile1 = await ImagePicker.pickImage(
+    var imageFile = await ImagePicker.pickImage(
       source: ImageSource.gallery,
+    );
+
+    upload(imageFile);
+
+    Navigator.push(
+      this.context,
+      MaterialPageRoute(
+        builder: (context) {
+          return ResultPage();
+        },
+      ),
     );
   }
 }

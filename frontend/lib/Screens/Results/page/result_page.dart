@@ -55,14 +55,14 @@ class _ResultPageState extends State<ResultPage> {
         child: GestureDetector(
           onTap: onClicked,
           child: AppBar(
-            title: buildDragIcon(), // Icon(Icons.drag_handle),
-            centerTitle: true,
-            bottom: TabBar(
-              tabs: [
-                Tab(child: Text('Vegetarian')),
-              ],
-            ),
-          ),
+              title: buildDragIcon(), // Icon(Icons.drag_handle),
+              centerTitle: true,
+              bottom: TabBar(
+                tabs: [
+                  Tab(child: Text('')),
+                ],
+              ),
+              automaticallyImplyLeading: false),
         ),
       );
 
