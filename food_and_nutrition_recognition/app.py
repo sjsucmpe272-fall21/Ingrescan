@@ -162,13 +162,13 @@ def upload(uid):
 
         response = {
             "food": predicted_food_item,
-            "energy_100g": food_description['energy_100g'],
-            "carbohydrates_100g": food_description['carbohydrates_100g'],
-            "sugars_100g": food_description['sugars_100g'],
-            "proteins_100g": food_description['proteins_100g'],
-            "fat_100g": food_description['fat_100g'],
-            "fiber_100g": food_description['fiber_100g'],
-            "cholesterol_100g": food_description['cholesterol_100g'],
+            "energy": food_description['energy_100g'],
+            "carbohydrates": food_description['carbohydrates_100g'],
+            "sugars": food_description['sugars_100g'],
+            "proteins": food_description['proteins_100g'],
+            "fat": food_description['fat_100g'],
+            "fiber": food_description['fiber_100g'],
+            "cholesterol": food_description['cholesterol_100g'],
             "recommended_food_items": recommended_food_items
         }
 
@@ -211,7 +211,6 @@ def get_user_hist(uid):
                 for key in keys:
                     temp_dict[key] = row[i]
                     i += 1
-                print(temp_dict)
                 user_history.append(temp_dict)
         return make_response({'user_history': user_history}, 200)
     except Exception as e:
