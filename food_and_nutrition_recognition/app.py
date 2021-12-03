@@ -204,13 +204,13 @@ def get_user_hist(uid):
                 AND unh.`public_u_id` = '{uid}';""")
 
             user_history = []
-            import pdb
-            pdb.set_trace()
             keys = list(res._metadata.keys())
             for row in res.first():
                 temp_dict = {}
-                for i in range(len(keys)):
-                    temp_dict[keys[i]] = row[i]
+                i = 0
+                for key in keys:
+                    temp_dict[key] = row[i]
+                    i += 1
                 user_history.append(temp_dict)
         return make_response(user_history, 200)
     except Exception as e:
