@@ -211,6 +211,7 @@ def get_user_hist(uid):
                 for key in keys:
                     temp_dict[key] = row[i]
                     i += 1
+                print(temp_dict)
                 user_history.append(temp_dict)
         return make_response({'user_history': user_history}, 200)
     except Exception as e:
