@@ -144,12 +144,12 @@ def upload(uid):
         db_obj.session.commit()
 
         with db_obj.get_engine().connect() as conn:
-            res = conn.execute("""SELECT SUM(`energy_100g`) AS energy,
-            SUM(`carbohydrates_100g`) as carbohydrates,
-            SUM(`proteins_100g`) as proteins,
-            SUM(`fat_100g`) as fat,
-            SUM(`fiber_100g`) as fiber,
-            SUM(`cholesterol_100g`) as cholesterol
+            res = conn.execute("""SELECT SUM(`energy_100g`)/COUNT(*) AS energy,
+            SUM(`carbohydrates_100g`)/COUNT(*) as carbohydrates,
+            SUM(`proteins_100g`)/COUNT(*) as proteins,
+            SUM(`fat_100g`)/COUNT(*) as fat,
+            SUM(`fiber_100g`)/COUNT(*) as fiber,
+            SUM(`cholesterol_100g`)/COUNT(*) as cholesterol
             FROM `IngreScan`.`user_nutrition_history`
             WHERE UNIX_TIMESTAMP(FROM_UNIXTIME(`timestamp`)) > UNIX_TIMESTAMP(CURRENT_DATE()) 
             AND UNIX_TIMESTAMP(FROM_UNIXTIME(`timestamp`)) < UNIX_TIMESTAMP(CURRENT_DATE() + INTERVAL 1 DAY);""")
