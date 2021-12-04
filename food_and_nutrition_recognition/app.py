@@ -211,7 +211,11 @@ def get_user_hist(uid):
                 temp_dict = {}
                 i = 0
                 for key in keys:
-                    temp_dict[key] = row[i]
+                    if key == 'S3_Image_URI':
+                        temp_dict[key] = 'https://ingrescan.s3.us-east-2.amazonaws.com/' + \
+                                  row[i].replace('=', '%3D').split('ingrescan/')[1]
+                    else:
+                        temp_dict[key] = row[i]
                     i += 1
                 user_history.append(temp_dict)
         return make_response({'user_history': user_history}, 200)
