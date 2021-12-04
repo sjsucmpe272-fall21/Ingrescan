@@ -86,7 +86,7 @@ def get_nutrition_info(nutrition_data_df, food_item):
     return food_description
 
 
-def recommend_food(nutrition_data_df, knn_nutrition_model, user_history, n=3):
+def recommend_food(nutrition_data_df, knn_nutrition_model, user_history, n=4):
     distances, indices = knn_nutrition_model.kneighbors([user_history], n_neighbors=n)
     recommended_food = [nutrition_data_df.loc[i]['food_item'] for i in indices[0]]
     return recommended_food
