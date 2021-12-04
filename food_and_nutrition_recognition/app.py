@@ -132,13 +132,13 @@ def upload(uid):
 
         userNutritionData = user_nutrition_history(f_id=userFoodData.f_id,
                                                    public_u_id=cfg['curr_user_id'],
-                                                   energy_100g=food_description['energy_100g'],
-                                                   carbohydrates_100g=food_description['carbohydrates_100g'],
-                                                   sugars_100g=food_description['sugars_100g'],
-                                                   proteins_100g=food_description['proteins_100g'],
-                                                   fat_100g=food_description['fat_100g'],
-                                                   fiber_100g=food_description['fiber_100g'],
-                                                   cholesterol_100g=food_description['cholesterol_100g'],
+                                                   energy_100g=round(food_description['energy_100g'], 2),
+                                                   carbohydrates_100g=round(food_description['carbohydrates_100g'], 2),
+                                                   sugars_100g=round(food_description['sugars_100g'], 2),
+                                                   proteins_100g=round(food_description['proteins_100g'], 2),
+                                                   fat_100g=round(food_description['fat_100g'], 2),
+                                                   fiber_100g=round(food_description['fiber_100g'], 2),
+                                                   cholesterol_100g=round(food_description['cholesterol_100g'], 2),
                                                    timestamp=cfg['curr_ts_epoch'])
         db_obj.session.add(userNutritionData)
         db_obj.session.commit()
@@ -162,13 +162,13 @@ def upload(uid):
 
         response = {
             "food": predicted_food_item,
-            "energy": food_description['energy_100g'],
-            "carbohydrates": food_description['carbohydrates_100g'],
-            "sugars": food_description['sugars_100g'],
-            "proteins": food_description['proteins_100g'],
-            "fat": food_description['fat_100g'],
-            "fiber": food_description['fiber_100g'],
-            "cholesterol": food_description['cholesterol_100g'],
+            "energy": round(food_description['energy_100g'], 2),
+            "carbohydrates": round(food_description['carbohydrates_100g'], 2),
+            "sugars": round(food_description['sugars_100g'], 2),
+            "proteins": round(food_description['proteins_100g'], 2),
+            "fat": round(food_description['fat_100g'], 2),
+            "fiber": round(food_description['fiber_100g'], 2),
+            "cholesterol":round( food_description['cholesterol_100g'], 2),
             "recommended_food_items": recommended_food_items,
             "S3_Image_URI": 'https://ingrescan.s3.us-east-2.amazonaws.com/' +
                             s3_image_key.replace('=', '%3D'),
@@ -217,8 +217,10 @@ def get_user_hist(uid):
                     if key == 'S3_Image_URI':
                         temp_dict[key] = 'https://ingrescan.s3.us-east-2.amazonaws.com/' + \
                                   row[i].replace('=', '%3D').split('ingrescan/')[1]
-                    else:
+                    elif key == "food" or key == "mimetype" or key == "timestamp":
                         temp_dict[key] = row[i]
+                    else:
+                        temp_dict[key] = round(row[i], 2)
                     i += 1
                 user_history.append(temp_dict)
         return make_response({'user_history': user_history}, 200)
