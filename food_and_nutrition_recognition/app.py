@@ -181,6 +181,7 @@ def upload(uid):
         return make_response(response, 200)
     except Exception as e:
         db_obj.session.rollback()
+        print(e)
         return make_response('Internal Server Error', 500, {'Error': str(e)})
 
 
@@ -227,6 +228,7 @@ def get_user_hist(uid):
         return make_response({'user_history': user_history}, 200)
     except Exception as e:
         db_obj.session.rollback()
+        print(e)
         return make_response('Internal Server Error', 500, {'Error': str(e)})
 
 
