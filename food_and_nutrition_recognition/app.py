@@ -159,6 +159,7 @@ def upload(uid):
             user_history.append(row)
 
         recommended_food_items = recommend_food(nutrition_data_df_global, knn_nutrition_model_global, user_history)
+        recommended_food_items.remove(predicted_food_item.replace('_', ' '))
 
         response = {
             "food": predicted_food_item,
@@ -168,7 +169,7 @@ def upload(uid):
             "proteins": round(food_description['proteins_100g'], 2),
             "fat": round(food_description['fat_100g'], 2),
             "fiber": round(food_description['fiber_100g'], 2),
-            "cholesterol":round( food_description['cholesterol_100g'], 2),
+            "cholesterol": round(food_description['cholesterol_100g'], 2),
             "recommended_food_items": recommended_food_items,
             "S3_Image_URI": 'https://ingrescan.s3.us-east-2.amazonaws.com/' +
                             s3_image_key.replace('=', '%3D'),
