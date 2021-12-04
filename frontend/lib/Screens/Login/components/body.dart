@@ -10,23 +10,8 @@ import 'package:flutter_svg/svg.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-Future<bool> login(String email, String password) async {
-  String basicAuth = 'Basic ' + base64Encode(utf8.encode('$email:$password'));
-  final http.Response response = await http.post(
-    'http://ec2-3-14-43-170.us-east-2.compute.amazonaws.com:5000/login',
-    headers: <String, String>{
-      'Content-Type': 'application/json; charset=UTF-8',
-      'authorization': basicAuth,
-    },
-  );
-  print(response.body);
-  print(response.statusCode);
-  if (response.statusCode == 200) {
-    return true;
-  } else {
-    return false;
-  }
-}
+Map<String, dynamic> responseDatas;
+var statusCode;
 
 class Body extends StatelessWidget {
   const Body({
@@ -71,16 +56,14 @@ class Body extends StatelessWidget {
 
                 bool check = true;
 
-                result
-                    .then((check) => Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) {
-                              return CameraPage();
-                            },
-                          ),
-                        ))
-                    .catchError((e) => print(e));
+                if (statusCode == 200) {
+                  Navigator.push(context, MaterialPageRoute(
+                    builder: (context) {
+                      print(responseDatas["id"]);
+                      return CameraPage(responseDatas["id"]);
+                    },
+                  ));
+                }
               },
             ),
             SizedBox(height: size.height * 0.03),
@@ -100,5 +83,26 @@ class Body extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Future<bool> login(String email, String password) async {
+    String basicAuth = 'Basic ' + base64Encode(utf8.encode('$email:$password'));
+    final http.Response response = await http.post(
+      'http://ec2-3-14-43-170.us-east-2.compute.amazonaws.com:5000/login',
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+        'authorization': basicAuth,
+      },
+    );
+
+    responseDatas = json.decode(response.body);
+    statusCode = response.statusCode;
+
+    print(response.statusCode);
+    if (response.statusCode == 200) {
+      return true;
+    } else {
+      return false;
+    }
   }
 }

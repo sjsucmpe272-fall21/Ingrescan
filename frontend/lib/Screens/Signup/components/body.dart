@@ -10,36 +10,6 @@ import 'package:flutter_svg/svg.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-Future<bool> signUp(String fname, String lname, String mobile, String email,
-    String password) async {
-  final http.Response response = await http.post(
-    'http://ec2-3-14-43-170.us-east-2.compute.amazonaws.com:5000/signup',
-    headers: <String, String>{
-      'Content-Type': 'application/json; charset=UTF-8',
-    },
-    body: jsonEncode(<String, dynamic>{
-      'fname': fname,
-      'lname': lname,
-      "phone": int.parse(mobile),
-      "email": email,
-      "password": password
-    }),
-  );
-  print(jsonEncode(<String, dynamic>{
-    'fname': fname,
-    'lname': lname,
-    "phone": int.parse(mobile),
-    "email": email,
-    "password": password
-  }));
-  print(response.body);
-  if (response.statusCode == 200) {
-    return true;
-  } else {
-    return false;
-  }
-}
-
 class Body extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -128,5 +98,35 @@ class Body extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Future<bool> signUp(String fname, String lname, String mobile, String email,
+      String password) async {
+    final http.Response response = await http.post(
+      'http://ec2-3-14-43-170.us-east-2.compute.amazonaws.com:5000/signup',
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(<String, dynamic>{
+        'fname': fname,
+        'lname': lname,
+        "phone": int.parse(mobile),
+        "email": email,
+        "password": password
+      }),
+    );
+    print(jsonEncode(<String, dynamic>{
+      'fname': fname,
+      'lname': lname,
+      "phone": int.parse(mobile),
+      "email": email,
+      "password": password
+    }));
+    print(response.body);
+    if (response.statusCode == 200) {
+      return true;
+    } else {
+      return false;
+    }
   }
 }

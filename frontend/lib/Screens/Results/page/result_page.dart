@@ -17,6 +17,7 @@ class ResultPage extends StatefulWidget {
   String sugar;
   String fat;
   String food;
+  List<dynamic> recommended_foods;
   ResultPage(
       this.file,
       this.responseData,
@@ -27,10 +28,21 @@ class ResultPage extends StatefulWidget {
       this.protein,
       this.sugar,
       this.fat,
-      this.food);
+      this.food,
+      this.recommended_foods);
   @override
-  _ResultPageState createState() => _ResultPageState(file, responseData, carbs,
-      calories, cholestrol, fiber, protein, sugar, fat, food);
+  _ResultPageState createState() => _ResultPageState(
+      file,
+      responseData,
+      carbs,
+      calories,
+      cholestrol,
+      fiber,
+      protein,
+      sugar,
+      fat,
+      food,
+      recommended_foods);
 }
 
 class _ResultPageState extends State<ResultPage> {
@@ -45,6 +57,7 @@ class _ResultPageState extends State<ResultPage> {
   String sugar;
   String fat;
   String food;
+  List<dynamic> recommended_foods;
   final File file;
   _ResultPageState(
       this.file,
@@ -56,76 +69,160 @@ class _ResultPageState extends State<ResultPage> {
       this.protein,
       this.sugar,
       this.fat,
-      this.food);
+      this.food,
+      this.recommended_foods);
   @override
   Widget build(BuildContext context) => Scaffold(
         appBar: AppBar(
+          backgroundColor: Color.fromRGBO(90, 45, 143, 1),
+          title: Text(
+            "IngreScan",
+            style: TextStyle(color: Colors.white),
+          ),
           centerTitle: true,
           elevation: 2,
         ),
         body: SingleChildScrollView(
             child: Column(children: [
-          SizedBox(height: 50),
+          SizedBox(height: 30),
           MainImageWidget(file),
-          Text(food),
+          SizedBox(height: 10),
+          Text(food,
+              style: TextStyle(
+                  color: Colors.grey[800],
+                  fontWeight: FontWeight.bold,
+                  fontSize: 18)),
+          SizedBox(height: 30),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               SvgPicture.asset(
                 "assets/icons/Carbs.svg",
-                height: MediaQuery.of(context).size.height * 0.1,
+                height: MediaQuery.of(context).size.height * 0.05,
               ),
-              Container(width: 100.0, child: Text(carbs)),
+              Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                Container(
+                    alignment: Alignment.center,
+                    width: 100.0,
+                    child: Text(carbs,
+                        style: TextStyle(
+                            color: Colors.grey[800],
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18)))
+              ]),
               SizedBox(width: 50),
               SvgPicture.asset(
                 "assets/icons/Calories.svg",
-                height: MediaQuery.of(context).size.height * 0.1,
+                height: MediaQuery.of(context).size.height * 0.05,
               ),
-              Container(width: 100.0, child: Text(calories))
+              Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                Container(
+                    alignment: Alignment.center,
+                    width: 100.0,
+                    child: Text(calories,
+                        style: TextStyle(
+                            color: Colors.grey[800],
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18)))
+              ]),
             ],
           ),
+          SizedBox(height: 30),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               SvgPicture.asset(
                 "assets/icons/Cholestrol.svg",
-                height: MediaQuery.of(context).size.height * 0.1,
+                height: MediaQuery.of(context).size.height * 0.05,
               ),
-              Container(width: 100.0, child: Text(cholestrol)),
+              Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                Container(
+                    alignment: Alignment.center,
+                    width: 100.0,
+                    child: Text(cholestrol,
+                        style: TextStyle(
+                            color: Colors.grey[800],
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18)))
+              ]),
               SizedBox(width: 50),
               SvgPicture.asset(
                 "assets/icons/Fibre.svg",
-                height: MediaQuery.of(context).size.height * 0.1,
+                height: MediaQuery.of(context).size.height * 0.05,
               ),
-              Container(width: 100.0, child: Text(fiber))
+              Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                Container(
+                    alignment: Alignment.center,
+                    width: 100.0,
+                    child: Text(fiber,
+                        style: TextStyle(
+                            color: Colors.grey[800],
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18)))
+              ]),
             ],
           ),
+          SizedBox(height: 30),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               SvgPicture.asset(
                 "assets/icons/Protein.svg",
-                height: MediaQuery.of(context).size.height * 0.1,
+                height: MediaQuery.of(context).size.height * 0.05,
               ),
-              Container(width: 100.0, child: Text(protein)),
+              Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                Container(
+                    alignment: Alignment.center,
+                    width: 100.0,
+                    child: Text(protein,
+                        style: TextStyle(
+                            color: Colors.grey[800],
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18)))
+              ]),
               SizedBox(width: 50),
               SvgPicture.asset(
                 "assets/icons/Sugar.svg",
-                height: MediaQuery.of(context).size.height * 0.1,
+                height: MediaQuery.of(context).size.height * 0.05,
               ),
-              Container(width: 100.0, child: Text(sugar))
+              Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                Container(
+                    alignment: Alignment.center,
+                    width: 100.0,
+                    child: Text(sugar,
+                        style: TextStyle(
+                            color: Colors.grey[800],
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18)))
+              ]),
             ],
           ),
+          SizedBox(height: 30),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               SvgPicture.asset(
                 "assets/icons/Fat.svg",
-                height: MediaQuery.of(context).size.height * 0.1,
+                height: MediaQuery.of(context).size.height * 0.05,
               ),
-              Container(width: 100.0, child: Text(fat))
+              Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                Container(
+                    alignment: Alignment.center,
+                    width: 100.0,
+                    child: Text(fat,
+                        style: TextStyle(
+                            color: Colors.grey[800],
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18)))
+              ]),
             ],
           ),
+          SizedBox(height: 30),
+          Text(recommended_foods.toString(),
+              style: TextStyle(
+                  color: Colors.grey[800],
+                  fontWeight: FontWeight.bold,
+                  fontSize: 18))
         ])),
       );
 

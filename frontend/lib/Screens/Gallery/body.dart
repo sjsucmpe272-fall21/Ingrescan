@@ -20,6 +20,11 @@ class _GalleryPageState extends State<GalleryPage> {
   @override
   Widget build(BuildContext context) => Scaffold(
       appBar: AppBar(
+        backgroundColor: Color.fromRGBO(90, 45, 143, 1),
+        title: Text(
+          "IngreScan",
+          style: TextStyle(color: Colors.white),
+        ),
         centerTitle: true,
         elevation: 2,
       ),

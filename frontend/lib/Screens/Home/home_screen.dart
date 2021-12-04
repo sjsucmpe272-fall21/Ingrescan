@@ -42,11 +42,15 @@ class LifecycleEventHandler extends WidgetsBindingObserver {
 }
 
 class CameraPage extends StatefulWidget {
+  String id;
+  CameraPage(this.id);
   @override
-  _CameraPageState createState() => _CameraPageState();
+  _CameraPageState createState() => _CameraPageState(id);
 }
 
 class _CameraPageState extends State<CameraPage> {
+  String id;
+  _CameraPageState(this.id);
   List<CameraDescription> _cameras;
   CameraController _controller;
   bool _isReady = false;
@@ -59,6 +63,7 @@ class _CameraPageState extends State<CameraPage> {
   String sugar;
   String fat;
   String food;
+  List<dynamic> recommended_foods;
   var responseData;
   @override
   void initState() {
@@ -76,6 +81,11 @@ class _CameraPageState extends State<CameraPage> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
+          backgroundColor: Color.fromRGBO(90, 45, 143, 1),
+          title: Text(
+            "IngreScan",
+            style: TextStyle(color: Colors.white),
+          ),
           centerTitle: true,
           elevation: 2,
         ),
@@ -185,8 +195,18 @@ class _CameraPageState extends State<CameraPage> {
               this.context,
               MaterialPageRoute(
                 builder: (context) {
-                  return ResultPage(imageFile, responseData, carbs, calories,
-                      cholestrol, fiber, protein, sugar, fat, food);
+                  return ResultPage(
+                      imageFile,
+                      responseData,
+                      carbs,
+                      calories,
+                      cholestrol,
+                      fiber,
+                      protein,
+                      sugar,
+                      fat,
+                      food,
+                      recommended_foods);
                 },
               ),
             ))
@@ -205,8 +225,18 @@ class _CameraPageState extends State<CameraPage> {
               this.context,
               MaterialPageRoute(
                 builder: (context) {
-                  return ResultPage(imageFile, responseData, carbs, calories,
-                      cholestrol, fiber, protein, sugar, fat, food);
+                  return ResultPage(
+                      imageFile,
+                      responseData,
+                      carbs,
+                      calories,
+                      cholestrol,
+                      fiber,
+                      protein,
+                      sugar,
+                      fat,
+                      food,
+                      recommended_foods);
                 },
               ),
             ))
@@ -214,10 +244,12 @@ class _CameraPageState extends State<CameraPage> {
   }
 
   Future<bool> upload(File imageFile) async {
+    print(id);
     var request = http.MultipartRequest(
       'POST',
-      Uri.parse(
-          "http://ec2-3-14-43-170.us-east-2.compute.amazonaws.com:5000/f9ee5547-52a9-4421-8c0e-d0de3a6b0fd7/imageUpload"),
+      Uri.parse("http://ec2-3-14-43-170.us-east-2.compute.amazonaws.com:5000/" +
+          id +
+          "/imageUpload"),
     );
     Map<String, String> headers = {"Content-type": "multipart/form-data"};
     request.files.add(
@@ -236,6 +268,8 @@ class _CameraPageState extends State<CameraPage> {
     var response = await request.send();
     var responded = await http.Response.fromStream(response);
     responseData = json.decode(responded.body);
+    recommended_foods = responseData["recommended_food_items"];
+    print(recommended_foods);
     food = responseData["food"].toString();
     carbs = responseData["carbohydrates"].toString();
     calories = responseData["energy"].toString();
@@ -249,8 +283,11 @@ class _CameraPageState extends State<CameraPage> {
   }
 
   Future<bool> getHistory() async {
+    print(id);
     final http.Response response = await http.get(
-      'http://ec2-3-14-43-170.us-east-2.compute.amazonaws.com:5000/f9ee5547-52a9-4421-8c0e-d0de3a6b0fd7/userHistory',
+      'http://ec2-3-14-43-170.us-east-2.compute.amazonaws.com:5000/' +
+          id +
+          '/userHistory',
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
@@ -258,6 +295,7 @@ class _CameraPageState extends State<CameraPage> {
     Map<String, dynamic> responseDatas = json.decode(response.body);
     List<dynamic> listUserHistory = responseDatas["user_history"];
     List<String> imageList = [];
+    print(listUserHistory);
     for (int i = 0; i < listUserHistory.length; i++) {
       imageList.add(listUserHistory[i]["S3_Image_URI"]);
     }
