@@ -8,7 +8,7 @@ from werkzeug.utils import secure_filename
 import uuid
 from database.db import connect_to_db
 from scripts.utils import api_config_init, food_predict, get_nutrition_info, recommend_food, allowed_file, \
-    s3_upload_data, get_image_url
+    s3_upload_data
 import warnings
 warnings.filterwarnings('ignore')
 
@@ -212,7 +212,8 @@ def get_user_hist(uid):
                 i = 0
                 for key in keys:
                     if key == 'S3_Image_URI':
-                        temp_dict[key] = get_image_url(row[i])
+                        temp_dict[key] = 'https://ingrescan.s3.us-east-2.amazonaws.com/' + \
+                                  row[i].replace('=', '%3D').split('ingrescan/')[1]
                     else:
                         temp_dict[key] = row[i]
                     i += 1
