@@ -169,7 +169,10 @@ def upload(uid):
             "fat": food_description['fat_100g'],
             "fiber": food_description['fiber_100g'],
             "cholesterol": food_description['cholesterol_100g'],
-            "recommended_food_items": recommended_food_items
+            "recommended_food_items": recommended_food_items,
+            "S3_Image_URI": 'https://ingrescan.s3.us-east-2.amazonaws.com/' +
+                            s3_image_key.replace('=', '%3D')
+            "mime_type": mimetype
         }
 
         s3_upload_data(cfg['bucket'], s3_image_key, image_path, mimetype)
