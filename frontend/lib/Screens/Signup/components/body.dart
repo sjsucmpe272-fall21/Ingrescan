@@ -103,7 +103,7 @@ class Body extends StatelessWidget {
                           context,
                           MaterialPageRoute(
                             builder: (context) {
-                              return ResultPage();
+                              return LoginScreen();
                             },
                           ),
                         ))

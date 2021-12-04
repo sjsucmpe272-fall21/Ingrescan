@@ -1,14 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
-import 'package:flutter_auth/Screens/Results/widget/main_image_widget.dart';
+import 'package:flutter_auth/Screens/Results/widget/main_image_widget_url.dart';
 import 'package:flutter_auth/Screens/Results/widget/tab_widget.dart';
 import 'dart:io';
 import 'package:flutter_svg/svg.dart';
 import 'dart:convert';
 
-class ResultPage extends StatefulWidget {
-  final File file;
-  final responseData;
+class ResultPageUrl extends StatefulWidget {
   String carbs;
   String calories;
   String cholestrol;
@@ -17,26 +15,17 @@ class ResultPage extends StatefulWidget {
   String sugar;
   String fat;
   String food;
-  ResultPage(
-      this.file,
-      this.responseData,
-      this.carbs,
-      this.calories,
-      this.cholestrol,
-      this.fiber,
-      this.protein,
-      this.sugar,
-      this.fat,
-      this.food);
+  String imageUrl;
+  ResultPageUrl(this.carbs, this.calories, this.cholestrol, this.fiber,
+      this.protein, this.sugar, this.fat, this.food, this.imageUrl);
   @override
-  _ResultPageState createState() => _ResultPageState(file, responseData, carbs,
-      calories, cholestrol, fiber, protein, sugar, fat, food);
+  _ResultPageState createState() => _ResultPageState(
+      carbs, calories, cholestrol, fiber, protein, sugar, fat, food, imageUrl);
 }
 
-class _ResultPageState extends State<ResultPage> {
+class _ResultPageState extends State<ResultPageUrl> {
   final panelController = PanelController();
   final double tabBarHeight = 90;
-  final responseData;
   String carbs;
   String calories;
   String cholestrol;
@@ -45,18 +34,9 @@ class _ResultPageState extends State<ResultPage> {
   String sugar;
   String fat;
   String food;
-  final File file;
-  _ResultPageState(
-      this.file,
-      this.responseData,
-      this.carbs,
-      this.calories,
-      this.cholestrol,
-      this.fiber,
-      this.protein,
-      this.sugar,
-      this.fat,
-      this.food);
+  String imageUrl;
+  _ResultPageState(this.carbs, this.calories, this.cholestrol, this.fiber,
+      this.protein, this.sugar, this.fat, this.food, this.imageUrl);
   @override
   Widget build(BuildContext context) => Scaffold(
         appBar: AppBar(
@@ -66,7 +46,7 @@ class _ResultPageState extends State<ResultPage> {
         body: SingleChildScrollView(
             child: Column(children: [
           SizedBox(height: 50),
-          MainImageWidget(file),
+          MainImageWidgetUrl(imageUrl),
           Text(food),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
