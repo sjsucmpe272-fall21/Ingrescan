@@ -172,7 +172,7 @@ def upload(uid):
             "recommended_food_items": recommended_food_items
         }
 
-        s3_upload_data(cfg['bucket'], s3_image_key, image_path)
+        s3_upload_data(cfg['bucket'], s3_image_key, image_path, mimetype)
         os.remove(image_path)
         return make_response(response, 200)
     except Exception as e:

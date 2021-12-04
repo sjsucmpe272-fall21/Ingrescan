@@ -101,9 +101,9 @@ def recommend_food(nutrition_data_df, knn_nutrition_model, user_history, n=3):
     return recommended_food
 
 
-def s3_upload_data(bucket, s3_key, local_path):
+def s3_upload_data(bucket, s3_key, local_path, mime_type):
     try:
-        s3_client.upload_file(local_path, bucket, s3_key)
+        s3_client.upload_file(local_path, bucket, s3_key, ExtraArgs={'ContentType': mime_type, 'ACL': "public-read"})
     except Exception as e:
         print(e)
         return False
