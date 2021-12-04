@@ -24,10 +24,21 @@ class Body extends StatelessWidget {
     String password = "";
     Size size = MediaQuery.of(context).size;
     return Background(
-      child: SingleChildScrollView(
+        child: Scaffold(
+      appBar: AppBar(
+        backgroundColor: Color.fromRGBO(90, 45, 143, 1),
+        title: Text(
+          "IngreScan",
+          style: TextStyle(color: Colors.white),
+        ),
+        centerTitle: true,
+        elevation: 2,
+      ),
+      body: SingleChildScrollView(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
+            SizedBox(height: size.height * 0.03),
             Text(
               "LOGIN",
               style: TextStyle(fontWeight: FontWeight.bold),
@@ -52,18 +63,7 @@ class Body extends StatelessWidget {
             RoundedButton(
               text: "LOGIN",
               press: () {
-                Future<bool> result = login(email, password);
-
-                bool check = true;
-
-                if (statusCode == 200) {
-                  Navigator.push(context, MaterialPageRoute(
-                    builder: (context) {
-                      print(responseDatas["id"]);
-                      return CameraPage(responseDatas["id"]);
-                    },
-                  ));
-                }
+                Future<bool> result = login(context, email, password);
               },
             ),
             SizedBox(height: size.height * 0.03),
@@ -82,27 +82,39 @@ class Body extends StatelessWidget {
           ],
         ),
       ),
-    );
+    ));
   }
 
-  Future<bool> login(String email, String password) async {
+  Future<bool> login(
+      BuildContext context, String email, String password) async {
     String basicAuth = 'Basic ' + base64Encode(utf8.encode('$email:$password'));
-    final http.Response response = await http.post(
-      'http://ec2-3-14-43-170.us-east-2.compute.amazonaws.com:5000/login',
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-        'authorization': basicAuth,
-      },
-    );
+    statusCode = 404;
+    try {
+      final http.Response response = await http.post(
+        'http://ec2-3-14-43-170.us-east-2.compute.amazonaws.com:5000/login',
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+          'authorization': basicAuth,
+        },
+      );
+      responseDatas = json.decode(response.body);
+      statusCode = response.statusCode;
+    } catch (e) {
+      print(e);
+    } finally {
+      print("HERE");
 
-    responseDatas = json.decode(response.body);
-    statusCode = response.statusCode;
-
-    print(response.statusCode);
-    if (response.statusCode == 200) {
-      return true;
-    } else {
-      return false;
+      if (statusCode == 200) {
+        Navigator.push(context, MaterialPageRoute(
+          builder: (context) {
+            print(responseDatas["id"]);
+            return CameraPage(responseDatas["id"]);
+          },
+        ));
+      }
     }
+
+    print(statusCode);
+    return true;
   }
 }

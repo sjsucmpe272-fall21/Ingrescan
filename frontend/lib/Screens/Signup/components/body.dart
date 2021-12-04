@@ -20,10 +20,21 @@ class Body extends StatelessWidget {
     String email = "";
     String password = "";
     return Background(
-      child: SingleChildScrollView(
+        child: Scaffold(
+      appBar: AppBar(
+        backgroundColor: Color.fromRGBO(90, 45, 143, 1),
+        title: Text(
+          "IngreScan",
+          style: TextStyle(color: Colors.white),
+        ),
+        centerTitle: true,
+        elevation: 2,
+      ),
+      body: SingleChildScrollView(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
+            SizedBox(height: size.height * 0.03),
             Text(
               "SIGNUP",
               style: TextStyle(fontWeight: FontWeight.bold),
@@ -97,7 +108,7 @@ class Body extends StatelessWidget {
           ],
         ),
       ),
-    );
+    ));
   }
 
   Future<bool> signUp(String fname, String lname, String mobile, String email,
