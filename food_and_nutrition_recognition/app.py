@@ -171,7 +171,7 @@ def upload(uid):
             "cholesterol": food_description['cholesterol_100g'],
             "recommended_food_items": recommended_food_items,
             "S3_Image_URI": 'https://ingrescan.s3.us-east-2.amazonaws.com/' +
-                            s3_image_key.replace('=', '%3D')
+                            s3_image_key.replace('=', '%3D'),
             "mime_type": mimetype
         }
 
