@@ -159,6 +159,7 @@ def upload(uid):
             user_history.append(row)
 
         recommended_food_items = recommend_food(nutrition_data_df_global, knn_nutrition_model_global, user_history)
+        print(recommended_food_items)
         recommended_food_items.remove(predicted_food_item.replace('_', ' '))
 
         response = {
