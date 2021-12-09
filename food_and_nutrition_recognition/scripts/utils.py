@@ -86,17 +86,15 @@ def get_nutrition_info(nutrition_data_df, food_item):
     return food_description
 
 
-def recommend_food(nutrition_data_df, knn_nutrition_model, user_history, n=3):
-    del user_history["food_item"]
-    del user_history["sugars_100g"]
-    distances, indices = knn_nutrition_model.kneighbors([list(user_history.values())], n_neighbors=n)
+def recommend_food(nutrition_data_df, knn_nutrition_model, user_history, n=4):
+    distances, indices = knn_nutrition_model.kneighbors([user_history], n_neighbors=n)
     recommended_food = [nutrition_data_df.loc[i]['food_item'] for i in indices[0]]
     return recommended_food
 
 
-def s3_upload_data(bucket, s3_key, local_path):
+def s3_upload_data(bucket, s3_key, local_path, mime_type):
     try:
-        s3_client.upload_file(local_path, bucket, s3_key)
+        s3_client.upload_file(local_path, bucket, s3_key, ExtraArgs={'ContentType': mime_type, 'ACL': "public-read"})
     except Exception as e:
         print(e)
         return False
